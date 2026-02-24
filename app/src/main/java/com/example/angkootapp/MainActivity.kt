@@ -35,7 +35,6 @@ fun MainScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-
         AppNavGraph(
             navController = navController,
             modifier = Modifier.padding(innerPadding)

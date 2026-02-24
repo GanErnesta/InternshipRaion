@@ -22,7 +22,6 @@ fun WelcomeScreen(
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -33,79 +32,64 @@ fun WelcomeScreen(
             contentScale = ContentScale.Crop
         )
 
-        // CONTENT
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
+                .padding(bottom = 80.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // TITLE
             Text(
                 text = "Selamat Datang",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
-            // SUBTITLE
             Text(
                 text = "Lebih mudah naik angkot dengan angkoot",
                 fontSize = 14.sp,
                 color = Color.White.copy(alpha = 0.85f)
             )
+        }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // BOTTOM BUTTON ROW
-            Row(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .navigationBarsPadding()
+                .align(Alignment.BottomCenter)
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clickable { onRegisterClick() },
+                contentAlignment = Alignment.Center
             ) {
+                Text(
+                    text = "Daftar",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
+            }
 
-                // LEFT - DAFTAR
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clickable { onRegisterClick() },
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Text(
-                        text = "Daftar",
-                        fontSize = 18.sp,
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-
-                // RIGHT - MASUK (Rounded Besar kiri atas)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 40.dp
-                            )
-                        )
-                        .background(Color(0xFFD9E1E5)) // Warna abu terang
-                        .clickable { onLoginClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Masuk",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF0F4C5C)
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(topStart = 40.dp))
+                    .background(Color(0xFFD9E1E5))
+                    .clickable { onLoginClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Masuk",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0F4C5C)
+                )
             }
         }
     }
