@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "202106285699",
+    "project_id": "loginangkoot",
+    "storage_bucket": "loginangkoot.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202106285699:android:ec5dd6ad1ca21cebd6b5b6",
+        "android_client_info": {
+          "package_name": "com.company.AngkootApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpeyzywcopt3iIynn6MBcf_0U3f5vEVBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202106285699:android:29ae4492a49686b3d6b5b6",
+        "android_client_info": {
+          "package_name": "com.example.angkootapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpeyzywcopt3iIynn6MBcf_0U3f5vEVBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
