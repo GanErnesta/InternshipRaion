@@ -1,6 +1,7 @@
 package com.example.angkootapp.model.viewModel
 
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,17 +27,17 @@ class LoginViewModel(
             result.onFailure { onError(it.message ?: "Terjadi kesalahan") }
         }
     }
+
     fun loginEmail(email: String, pass: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         if (email.isBlank() || pass.isBlank()) {
             onError("Email dan Password tidak boleh kosong")
             return
         }
-        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
-        if (!emailPattern.matches(emailPattern.toRegex())){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onError("Format email tidak valid")
             return
         }
-        if (pass.length < 8){
+        if (pass.length < 8) {
             onError("Password minimal 8 karakter")
             return
         }
