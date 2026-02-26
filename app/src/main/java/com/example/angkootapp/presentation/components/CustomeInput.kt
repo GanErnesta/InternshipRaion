@@ -8,8 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.angkootapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -18,37 +21,40 @@ fun CustomInputField(
     placeholder: String,
     leadingIcon: Int,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    isPassword: Boolean = false,
+    passwordVisible: Boolean = true,
+    onPasswordToggle: (() -> Unit)? = null
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF0F4C5C)
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
+        Text(text = label, fontWeight = FontWeight.SemiBold, color = Color.Gray)
+        Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    color = Color(0xFF8391A1),
-                    fontSize = 14.sp
-                )
-            },
+            placeholder = { Text(placeholder) },
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = leadingIcon),
                     contentDescription = null,
-                    tint = Color(0xFF2CB9D1),
                     modifier = Modifier.size(20.dp)
                 )
             },
+            trailingIcon = {
+                if (isPassword && onPasswordToggle != null) {
+                    val icon = if (passwordVisible) R.drawable.eyeopen else R.drawable.eyeclose
+                    IconButton(onClick = onPasswordToggle) {
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = "Toggle Password",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(25.dp)
+                        )
+                    }
+                }
+            },
+            visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(

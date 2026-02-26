@@ -26,6 +26,13 @@ class AuthRepository {
             Result.failure(e)
         }
     }
-
+    suspend fun signUpWithEmail(email: String, pass: String): Result<Boolean> {
+        return try {
+            auth.createUserWithEmailAndPassword(email, pass).await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
     fun getCurrentUser() = auth.currentUser
 }
