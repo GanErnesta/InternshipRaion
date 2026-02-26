@@ -3,6 +3,8 @@ package com.example.angkootapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.angkootapp.model.viewModel.LoginViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,10 +36,20 @@ fun AppNavGraph(
         }
 
         composable(Screen.Login.route) {
+            val loginViewModel: LoginViewModel = viewModel()
             LoginScreen(
                 onBackClick = {
                     navController.popBackStack()
-                }
+                },
+                onLoginSucces = {
+                    navController.navigate(Screen.MapsScreen.route){
+                        popUpTo(Screen.Login.route) {inclusive = true}
+                    }
+                },
+                onRegisterClick = {
+                    navController.navigate(Screen.Register.route)
+                },
+                viewModel = loginViewModel
             )
         }
 
