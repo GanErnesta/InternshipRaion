@@ -12,13 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.angkootapp.presentation.navigation.AppNavGraph
 import com.example.angkootapp.ui.theme.AngkootAppTheme
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
+        FirebaseApp.initializeApp(this)
         setContent {
             AngkootAppTheme {
                 MainScreen()
