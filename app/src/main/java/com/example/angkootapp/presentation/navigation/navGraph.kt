@@ -1,6 +1,5 @@
 package com.example.angkootapp.presentation.navigation
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -11,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.angkootapp.presentation.auth.LoginScreen
 import com.example.angkootapp.presentation.auth.RegisterScreen
-import com.example.angkootapp.presentation.homePage.MapsScreen
+import com.example.angkootapp.presentation.homePage.MapPage
 import com.example.angkootapp.presentation.welcomePage.WelcomeScreen
 
 @Composable
@@ -19,13 +18,11 @@ fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-
     NavHost(
         navController = navController,
-        startDestination = Screen.Welcome.route,
+        startDestination = Screen.MapsScreen.route,
         modifier = modifier
     ) {
-
         composable(Screen.Welcome.route) {
             WelcomeScreen(
                 onLoginClick = {
@@ -36,7 +33,6 @@ fun AppNavGraph(
                 }
             )
         }
-
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = viewModel()
             LoginScreen(
@@ -54,7 +50,6 @@ fun AppNavGraph(
                 viewModel = loginViewModel
             )
         }
-
         composable(Screen.Register.route) {
             val registerViewModel: RegisterViewModel = viewModel()
             RegisterScreen(
@@ -70,12 +65,10 @@ fun AppNavGraph(
                     navController.navigate(Screen.Login.route)
                 },
                 viewModel = registerViewModel
-
             )
         }
         composable(Screen.MapsScreen.route) {
-            MapsScreen(
-
+            MapPage(
             )
         }
     }

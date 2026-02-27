@@ -44,7 +44,6 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -57,7 +56,6 @@ fun LoginScreen(
                 tint = Color(0xFFB4B4B4)
             )
         }
-
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,7 +71,6 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AuthHeader(title = "Masuk")
-
                 CustomInputField(
                     value = email,
                     onValueChange = { email = it },
@@ -81,9 +78,7 @@ fun LoginScreen(
                     placeholder = "Masukkan Email",
                     leadingIcon = R.drawable.vector
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 CustomInputField(
                     value = password,
                     onValueChange = { password = it },
@@ -94,9 +89,7 @@ fun LoginScreen(
                     passwordVisible = passwordVisible,
                     onPasswordToggle = {passwordVisible = !passwordVisible}
                 )
-
                 Spacer(modifier = Modifier.height(32.dp))
-
                 PrimaryButton(
                     text = "Masuk",
                     onClick = {
@@ -113,9 +106,7 @@ fun LoginScreen(
                         )
                     }
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 GoogleSignInButton(
                     onTokenReceived = { token ->
                         viewModel.loginWithGoogle(
@@ -133,7 +124,6 @@ fun LoginScreen(
                         Toast.makeText(context, "Google Sign In Dibatalkan", Toast.LENGTH_SHORT).show()
                     }
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val annotatedString = buildAnnotatedString {
@@ -144,7 +134,6 @@ fun LoginScreen(
                     }
                     pop()
                 }
-
                 Text(
                     text = annotatedString,
                     fontSize = 14.sp,
@@ -152,7 +141,6 @@ fun LoginScreen(
                 )
             }
         }
-
         if (viewModel.isLoading) {
             LoadingOverlay()
         }
