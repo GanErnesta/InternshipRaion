@@ -87,7 +87,7 @@ fun LoginScreen(
                     leadingIcon = R.drawable.people,
                     isPassword = true,
                     passwordVisible = passwordVisible,
-                    onPasswordToggle = {passwordVisible = !passwordVisible}
+                    onPasswordToggle = { passwordVisible = !passwordVisible }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 PrimaryButton(
@@ -97,7 +97,8 @@ fun LoginScreen(
                             email = email,
                             pass = password,
                             onSuccess = {
-                                Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT)
+                                    .show()
                                 onLoginSucces()
                             },
                             onError = { pesan ->
@@ -112,24 +113,41 @@ fun LoginScreen(
                         viewModel.loginWithGoogle(
                             idToken = token,
                             onSuccess = {
-                                Toast.makeText(context, "Selamat Datang!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Selamat Datang!", Toast.LENGTH_SHORT)
+                                    .show()
                                 onLoginSucces()
                             },
                             onError = { pesanError ->
-                                Toast.makeText(context, "Login Gagal: $pesanError", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    "Login Gagal: $pesanError",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         )
                     },
                     onError = {
-                        Toast.makeText(context, "Google Sign In Dibatalkan", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Google Sign In Dibatalkan", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val annotatedString = buildAnnotatedString {
-                    append("Belum Punya Akun? ")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Gray,
+                        )
+                    ) {
+                        append("Belum Punya Akun? ")
+                    }
                     pushStringAnnotation(tag = "register", annotation = "register")
-                    withStyle(style = SpanStyle(color = Color(0xFF2CB9D1), fontWeight = FontWeight.Bold)) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFF2CB9D1),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
                         append("Daftar Sekarang!!")
                     }
                     pop()

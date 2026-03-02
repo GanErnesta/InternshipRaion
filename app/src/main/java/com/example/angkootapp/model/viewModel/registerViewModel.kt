@@ -15,31 +15,71 @@ class RegisterViewModel(
     var isLoading by mutableStateOf(false)
         private set
 
-    fun registerEmail(email: String, pass: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        if (email.isBlank() || pass.isBlank()) {
-            onError("Email dan password tidak boleh kosong")
-            return
+    var emailError by mutableStateOf<String?>(null)
+        private set
+
+    var passwordError by mutableStateOf<String?>(null)
+        private set
+
+    var generalError by mutableStateOf<String?>(null)
+        private set
+
+    fun registerEmail(email: String, pass: String, onSuccess: () -> Unit) {
+        emailError = null
+        passwordError = null
+        generalError = null
+
+        var hasError = false
+
+        if (email.isBlank()) {
+            emailError = "Email tidak boleh kosong"
+            hasError = true
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailError = "Format email tidak valid"
+            hasError = true
         }
 
-        if (pass.length < 8) {
-            onError("Password minimal harus 8 karakter")
-            return
+        if (pass.isBlank()) {
+            passwordError = "Password tidak boleh kosong"
+            hasError = true
+        } else if (pass.length < 8) {
+            passwordError = "Password minimal harus 8 karakter"
+            hasError = true
         }
+
+        if (hasError) return
 
         viewModelScope.launch {
             isLoading = true
             val result = repository.signUpWithEmail(email, pass)
             isLoading = false
 
-            result.onSuccess { onSuccess() }
+            result.onSuccess {
+                onSuccess()
+            }
             result.onFailure { exception ->
-                val errorMessage = when {
-                    exception.message?.contains("email-already-in-use") == true -> "Email sudah terdaftar"
-                    exception.message?.contains("invalid-email") == true -> "Format email salah"
-                    else -> exception.message ?: "Pendaftaran Gagal"
+                val message = exception.message ?: ""
+                when {
+                    message.contains("email-already-in-use") -> {
+                        emailError = "Email sudah terdaftar"
+                    }
+                    message.contains("invalid-email") -> {
+                        emailError = "Format email salah"
+                    }
+                    message.contains("network-request-failed") -> {
+                        generalError = "Koneksi internet bermasalah"
+                    }
+                    else -> {
+                        generalError = message.ifBlank { "Pendaftaran Gagal" }
+                    }
                 }
-                onError(errorMessage)
             }
         }
+    }
+
+    fun clearErrors() {
+        emailError = null
+        passwordError = null
+        generalError = null
     }
 }

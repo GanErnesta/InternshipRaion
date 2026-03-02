@@ -13,6 +13,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.angkootapp.R
+import com.example.angkootapp.ui.theme.primaryTextColor
+import com.example.angkootapp.ui.theme.secondTextColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +40,7 @@ fun CustomInputField(
                 Icon(
                     painter = painterResource(id = leadingIcon),
                     contentDescription = null,
+                    tint = Color.Gray,
                     modifier = Modifier.size(20.dp)
                 )
             },
@@ -66,6 +69,9 @@ fun CustomInputField(
 
                 focusedTextColor = Color(0xFF0F4C5C),
                 unfocusedTextColor = Color(0xFF0F4C5C),
+
+                focusedPlaceholderColor = primaryTextColor,
+                unfocusedPlaceholderColor = secondTextColor,
 
                 cursorColor = Color(0xFF2CB9D1)
             )

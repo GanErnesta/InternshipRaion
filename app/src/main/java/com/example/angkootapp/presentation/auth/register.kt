@@ -28,6 +28,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.angkootapp.R
 import com.example.angkootapp.model.viewModel.RegisterViewModel
 import com.example.angkootapp.presentation.components.*
+import com.example.angkootapp.ui.theme.primaryColor
+import com.example.angkootapp.ui.theme.primaryTextColor
+import com.example.angkootapp.ui.theme.secondTextColor
 
 @Composable
 fun RegisterScreen(
@@ -134,7 +137,7 @@ fun RegisterScreen(
                     leadingIcon = R.drawable.people,
                     isPassword = true,
                     passwordVisible = passwordVisible,
-                    onPasswordToggle = {passwordVisible = !passwordVisible}
+                    onPasswordToggle = { passwordVisible = !passwordVisible }
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -147,7 +150,7 @@ fun RegisterScreen(
                     leadingIcon = R.drawable.people,
                     isPassword = true,
                     passwordVisible = confirmpasswordVisible,
-                    onPasswordToggle = {confirmpasswordVisible = !confirmpasswordVisible}
+                    onPasswordToggle = { confirmpasswordVisible = !confirmpasswordVisible }
                 )
 
                 Row(
@@ -157,7 +160,10 @@ fun RegisterScreen(
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF2CB9D1))
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFF2CB9D1),
+                            uncheckedColor = Color.Gray
+                        )
                     )
                     Text(
                         text = "Saya setuju dengan persyaratan dan penggunaan.",
@@ -170,15 +176,21 @@ fun RegisterScreen(
                     text = "Daftar",
                     onClick = {
                         if (password != confirmPassword) {
-                            Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT)
+                                .show()
                         } else if (!isChecked) {
-                            Toast.makeText(context, "Setujui persyaratan dahulu", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Setujui persyaratan dahulu",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         } else {
                             viewModel.registerEmail(
                                 email = email,
                                 pass = password,
                                 onSuccess = {
-                                    Toast.makeText(context, "Berhasil Daftar!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Berhasil Daftar!", Toast.LENGTH_SHORT)
+                                        .show()
                                     onRegisterSuccess()
                                 },
                                 onError = { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
@@ -210,9 +222,20 @@ fun RegisterScreen(
                     )
                 }
                 val annotatedString = buildAnnotatedString {
-                    append("Sudah Punya Akun? ")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Gray
+                        )
+                    ){
+                        append("Sudah Punya Akun? ")
+                    }
                     pushStringAnnotation(tag = "login", annotation = "login")
-                    withStyle(style = SpanStyle(color = Color(0xFF2CB9D1), fontWeight = FontWeight.Bold)) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFF2CB9D1),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
                         append("Masuk Sekarang!!")
                     }
                     pop()
