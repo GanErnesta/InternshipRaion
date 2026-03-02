@@ -15,6 +15,12 @@ class RegisterViewModel(
     var isLoading by mutableStateOf(false)
         private set
 
+    var nameError by mutableStateOf<String?>(null)
+        private set
+
+    var phoneError by mutableStateOf<String?>(null)
+        private set
+
     var emailError by mutableStateOf<String?>(null)
         private set
 
@@ -24,12 +30,32 @@ class RegisterViewModel(
     var generalError by mutableStateOf<String?>(null)
         private set
 
-    fun registerEmail(email: String, pass: String, onSuccess: () -> Unit) {
+    fun registerEmail(
+        name: String,
+        phone: String,
+        email: String,
+        pass: String,
+        onSuccess: () -> Unit
+    ) {
+        nameError = null
+        phoneError = null
         emailError = null
         passwordError = null
         generalError = null
 
         var hasError = false
+        if (name.isBlank()){
+            nameError = "Nama tidak boleh kosong"
+            hasError = true
+        }
+
+        if (phone.isBlank()) {
+            phoneError = "Nomor telepon tidak boleh kosong"
+            hasError = true
+        } else if (phone.length < 10) {
+            phoneError = "Nomor telepon tidak valid"
+            hasError = true
+        }
 
         if (email.isBlank()) {
             emailError = "Email tidak boleh kosong"
@@ -38,7 +64,6 @@ class RegisterViewModel(
             emailError = "Format email tidak valid"
             hasError = true
         }
-
         if (pass.isBlank()) {
             passwordError = "Password tidak boleh kosong"
             hasError = true
@@ -46,9 +71,7 @@ class RegisterViewModel(
             passwordError = "Password minimal harus 8 karakter"
             hasError = true
         }
-
         if (hasError) return
-
         viewModelScope.launch {
             isLoading = true
             val result = repository.signUpWithEmail(email, pass)
@@ -63,12 +86,15 @@ class RegisterViewModel(
                     message.contains("email-already-in-use") -> {
                         emailError = "Email sudah terdaftar"
                     }
+
                     message.contains("invalid-email") -> {
                         emailError = "Format email salah"
                     }
+
                     message.contains("network-request-failed") -> {
                         generalError = "Koneksi internet bermasalah"
                     }
+
                     else -> {
                         generalError = message.ifBlank { "Pendaftaran Gagal" }
                     }
@@ -78,6 +104,8 @@ class RegisterViewModel(
     }
 
     fun clearErrors() {
+        nameError = null
+        phoneError = null
         emailError = null
         passwordError = null
         generalError = null

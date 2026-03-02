@@ -2,7 +2,6 @@ package com.example.angkootapp.presentation.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,9 +28,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.angkootapp.R
 import com.example.angkootapp.model.viewModel.RegisterViewModel
 import com.example.angkootapp.presentation.components.*
-import com.example.angkootapp.ui.theme.primaryColor
-import com.example.angkootapp.ui.theme.primaryTextColor
-import com.example.angkootapp.ui.theme.secondTextColor
 
 @Composable
 fun RegisterScreen(
@@ -51,6 +48,11 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmpasswordVisible by remember { mutableStateOf(false) }
 
+    LaunchedEffect(viewModel.generalError) {
+        viewModel.generalError?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -104,53 +106,57 @@ fun RegisterScreen(
                     onValueChange = { name = it },
                     label = "Nama Lengkap",
                     placeholder = "Masukkan Nama",
-                    leadingIcon = R.drawable.people
+                    leadingIcon = R.drawable.people,
+                    isError = viewModel.nameError != null,
+                    supportingText = viewModel.nameError
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
 
                 CustomInputField(
                     value = phone,
                     onValueChange = { phone = it },
                     label = "No. Telp",
-                    placeholder = "Masukkan No. Telp",
-                    leadingIcon = R.drawable.vector
+                    placeholder = "8123456789",
+                    leadingIcon = R.drawable.email,
+                    keyboardType = KeyboardType.Number,
+                    prefix = "+62 ",
+                    isError = viewModel.phoneError != null,
+                    supportingText = viewModel.phoneError
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
 
                 CustomInputField(
                     value = email,
                     onValueChange = { email = it },
                     label = "Email",
                     placeholder = "Masukkan Email",
-                    leadingIcon = R.drawable.vector
+                    leadingIcon = R.drawable.email,
+                    isError = viewModel.emailError != null,
+                    supportingText = viewModel.emailError
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
 
                 CustomInputField(
                     value = password,
                     onValueChange = { password = it },
                     label = "Kata Sandi",
                     placeholder = "Kata Sandi",
-                    leadingIcon = R.drawable.people,
+                    leadingIcon = R.drawable.lock,
                     isPassword = true,
                     passwordVisible = passwordVisible,
-                    onPasswordToggle = { passwordVisible = !passwordVisible }
+                    onPasswordToggle = { passwordVisible = !passwordVisible },
+                    isError = viewModel.passwordError != null,
+                    supportingText = viewModel.passwordError
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
 
                 CustomInputField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
                     label = "Konfirmasi Kata Sandi",
                     placeholder = "Konfirmasi Kata Sandi",
-                    leadingIcon = R.drawable.people,
+                    leadingIcon = R.drawable.lock,
                     isPassword = true,
                     passwordVisible = confirmpasswordVisible,
-                    onPasswordToggle = { confirmpasswordVisible = !confirmpasswordVisible }
+                    onPasswordToggle = { confirmpasswordVisible = !confirmpasswordVisible },
+                    isError = password != confirmPassword && confirmPassword.isNotEmpty(),
+                    supportingText = if (password != confirmPassword && confirmPassword.isNotEmpty()) "Password tidak cocok" else null
                 )
 
                 Row(
@@ -175,58 +181,29 @@ fun RegisterScreen(
                 PrimaryButton(
                     text = "Daftar",
                     onClick = {
-                        if (password != confirmPassword) {
-                            Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT)
-                                .show()
-                        } else if (!isChecked) {
-                            Toast.makeText(
-                                context,
-                                "Setujui persyaratan dahulu",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        if (!isChecked) {
+                            Toast.makeText(context, "Setujui persyaratan dahulu", Toast.LENGTH_SHORT).show()
+                        } else if (password != confirmPassword) {
+                            Toast.makeText(context, "Konfirmasi password salah", Toast.LENGTH_SHORT).show()
                         } else {
                             viewModel.registerEmail(
+                                name = name,
+                                phone = phone,
                                 email = email,
                                 pass = password,
                                 onSuccess = {
-                                    Toast.makeText(context, "Berhasil Daftar!", Toast.LENGTH_SHORT)
-                                        .show()
+                                    Toast.makeText(context, "Berhasil Daftar!", Toast.LENGTH_SHORT).show()
                                     onRegisterSuccess()
-                                },
-                                onError = { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
+                                }
                             )
                         }
                     }
                 )
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = Color.LightGray,
-                        thickness = 1.dp
-                    )
-                    Text(
-                        text = " Atau login dengan ",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = Color.LightGray,
-                        thickness = 1.dp
-                    )
-                }
                 val annotatedString = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Gray
-                        )
-                    ){
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
                         append("Sudah Punya Akun? ")
                     }
                     pushStringAnnotation(tag = "login", annotation = "login")
@@ -246,6 +223,8 @@ fun RegisterScreen(
                     fontSize = 14.sp,
                     modifier = Modifier.clickable { onLoginClick() }
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
 

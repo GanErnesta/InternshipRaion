@@ -37,6 +37,13 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModel.generalError) {
+        viewModel.generalError?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.bgwelcome),
@@ -76,7 +83,9 @@ fun LoginScreen(
                     onValueChange = { email = it },
                     label = "Email",
                     placeholder = "Masukkan Email",
-                    leadingIcon = R.drawable.vector
+                    leadingIcon = R.drawable.email,
+                    isError = viewModel.emailError != null,
+                    supportingText = viewModel.emailError
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomInputField(
@@ -84,12 +93,16 @@ fun LoginScreen(
                     onValueChange = { password = it },
                     label = "Kata sandi",
                     placeholder = "Kata sandi",
-                    leadingIcon = R.drawable.people,
+                    leadingIcon = R.drawable.lock,
                     isPassword = true,
                     passwordVisible = passwordVisible,
-                    onPasswordToggle = { passwordVisible = !passwordVisible }
+                    onPasswordToggle = { passwordVisible = !passwordVisible },
+                    isError = viewModel.passwordError != null,
+                    supportingText = viewModel.passwordError
                 )
+
                 Spacer(modifier = Modifier.height(32.dp))
+
                 PrimaryButton(
                     text = "Masuk",
                     onClick = {
@@ -97,48 +110,32 @@ fun LoginScreen(
                             email = email,
                             pass = password,
                             onSuccess = {
-                                Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT).show()
                                 onLoginSucces()
-                            },
-                            onError = { pesan ->
-                                Toast.makeText(context, pesan, Toast.LENGTH_LONG).show()
                             }
                         )
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 GoogleSignInButton(
-                    onTokenReceived = { token ->
+                    onTokenReceived = { token, name ->
                         viewModel.loginWithGoogle(
                             idToken = token,
                             onSuccess = {
-                                Toast.makeText(context, "Selamat Datang!", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(context, "Selamat Datang $name!", Toast.LENGTH_SHORT).show()
                                 onLoginSucces()
-                            },
-                            onError = { pesanError ->
-                                Toast.makeText(
-                                    context,
-                                    "Login Gagal: $pesanError",
-                                    Toast.LENGTH_LONG
-                                ).show()
                             }
                         )
                     },
-                    onError = {
-                        Toast.makeText(context, "Google Sign In Dibatalkan", Toast.LENGTH_SHORT)
-                            .show()
+                    onError = { pesanError ->
+                        Toast.makeText(context, "Login Gagal: $pesanError", Toast.LENGTH_LONG).show()
                     }
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val annotatedString = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Gray,
-                        )
-                    ) {
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
                         append("Belum Punya Akun? ")
                     }
                     pushStringAnnotation(tag = "register", annotation = "register")
