@@ -20,7 +20,7 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.MapsScreen.route,
+        startDestination = Screen.Welcome.route,
         modifier = modifier
     ) {
         composable(Screen.Welcome.route) {

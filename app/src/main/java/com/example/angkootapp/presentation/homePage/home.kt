@@ -11,6 +11,8 @@ import android.location.Geocoder
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.angkootapp.R
 import com.example.angkootapp.model.data.AngkotLocation
+import com.example.angkootapp.model.data.RouteData
 import com.example.angkootapp.model.data.TerminalLocation
 import com.example.angkootapp.presentation.components.MapSearchBar
 import com.google.android.gms.location.*
@@ -69,6 +72,8 @@ fun MapPage() {
     val terminalList = remember { mutableStateListOf<TerminalLocation>() }
     var mapsInitialized by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    var currentRoute by remember { mutableStateOf<List<LatLng>>(emptyList()) }
+    var isSearchActive by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         MapsInitializer.initialize(context, MapsInitializer.Renderer.LATEST) {
@@ -156,6 +161,16 @@ fun MapPage() {
                     )
                 }
             }
+            if (currentRoute.isNotEmpty()) {
+                Polyline(
+                    points = currentRoute,
+                    color = Color.Blue,
+                    width = 15f,
+                    jointType = JointType.ROUND,
+                    startCap = RoundCap(),
+                    endCap = RoundCap()
+                )
+            }
             terminalList.forEach { terminal ->
                 Marker(
                     state = MarkerState(position = terminal.position),
@@ -163,18 +178,34 @@ fun MapPage() {
                 )
             }
         }
+        if (isSearchActive) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        onClick = { isSearchActive = false },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+            )
+        }
 
         MapSearchBar(
             modifier = Modifier.statusBarsPadding(),
+            active = isSearchActive,
+            onActiveChange = {isSearchActive = it},
             onSearch = { query ->
                 coroutineScope.launch {
                     val result = searchLocation(context, query)
                     if (result != null) {
+                        if (query.contains("Landungsari", ignoreCase = true)) {
+                            currentRoute = RouteData.UB_TO_LANDUNGSARI
+                        } else {
+                            currentRoute = emptyList()
+                        }
                         cameraPositionState.animate(
                             CameraUpdateFactory.newLatLngZoom(result, 15f), 1000
                         )
-                    } else {
-                        Toast.makeText(context, "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -184,9 +215,14 @@ fun MapPage() {
                 coroutineScope.launch {
                     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                         location?.let {
-                            coroutineScope.launch { // Launch coroutine lagi untuk animasi
+                            coroutineScope.launch {
                                 cameraPositionState.animate(
-                                    CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), 18f)
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        LatLng(
+                                            it.latitude,
+                                            it.longitude
+                                        ), 18f
+                                    )
                                 )
                             }
                         }
@@ -194,7 +230,7 @@ fun MapPage() {
                 }
             },
             modifier = Modifier
-                .align(Alignment.BottomEnd) // Menyelaraskan ke kanan bawah Box
+                .align(Alignment.BottomEnd)
                 .padding(bottom = 120.dp, end = 12.dp),
             containerColor = Color.White,
             contentColor = Color.Blue,

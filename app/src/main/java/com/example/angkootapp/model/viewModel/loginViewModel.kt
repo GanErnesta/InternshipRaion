@@ -1,6 +1,5 @@
 package com.example.angkootapp.model.viewModel
 
-
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,46 +16,85 @@ class LoginViewModel(
     var isLoading by mutableStateOf(false)
         private set
 
-    fun loginWithGoogle(idToken: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        viewModelScope.launch {
-            isLoading = true
-            val result = repository.signInWithGoogle(idToken)
-            isLoading = false
+    var emailError by mutableStateOf<String?>(null)
+        private set
 
-            result.onSuccess { onSuccess() }
-            result.onFailure { onError(it.message ?: "Terjadi kesalahan") }
-        }
-    }
+    var passwordError by mutableStateOf<String?>(null)
+        private set
 
-    fun loginEmail(email: String, pass: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        if (email.isBlank() || pass.isBlank()) {
-            onError("Email dan Password tidak boleh kosong")
-            return
+    var generalError by mutableStateOf<String?>(null)
+        private set
+
+    fun loginEmail(email: String, pass: String, onSuccess: () -> Unit) {
+        emailError = null
+        passwordError = null
+        generalError = null
+
+        var hasError = false
+
+        if (email.isBlank()) {
+            emailError = "Email tidak boleh kosong"
+            hasError = true
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailError = "Format email tidak valid"
+            hasError = true
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            onError("Format email tidak valid")
-            return
+
+        if (pass.isBlank()) {
+            passwordError = "Password tidak boleh kosong"
+            hasError = true
+        } else if (pass.length < 8) {
+            passwordError = "Password minimal 8 karakter"
+            hasError = true
         }
-        if (pass.length < 8) {
-            onError("Password minimal 8 karakter")
-            return
-        }
+
+        if (hasError) return
 
         viewModelScope.launch {
             isLoading = true
             val result = repository.loginWithEmail(email, pass)
             isLoading = false
 
-            result.onSuccess { onSuccess() }
+            result.onSuccess {
+                onSuccess()
+            }
             result.onFailure { exception ->
-                val errorMessage = when {
-                    exception.message?.contains("user-not-found") == true -> "Email belum terdaftar"
-                    exception.message?.contains("wrong-password") == true -> "Password salah"
-                    exception.message?.contains("invalid-email") == true -> "Format email salah"
-                    else -> exception.message ?: "Login Gagal"
+                val message = exception.message ?: ""
+                when {
+                    message.contains("user-not-found") || message.contains("invalid-credential") -> {
+                        generalError = "Email atau password salah"
+                    }
+                    message.contains("invalid-email") -> {
+                        emailError = "Format email salah"
+                    }
+                    message.contains("network-request-failed") -> {
+                        generalError = "Koneksi internet bermasalah"
+                    }
+                    else -> {
+                        generalError = message.ifBlank { "Login Gagal" }
+                    }
                 }
-                onError(errorMessage)
             }
         }
+    }
+
+    fun loginWithGoogle(idToken: String, onSuccess: () -> Unit) {
+        generalError = null
+        viewModelScope.launch {
+            isLoading = true
+            val result = repository.signInWithGoogle(idToken)
+            isLoading = false
+
+            result.onSuccess { onSuccess() }
+            result.onFailure {
+                generalError = it.message ?: "Gagal login dengan Google"
+            }
+        }
+    }
+
+    fun clearErrors() {
+        emailError = null
+        passwordError = null
+        generalError = null
     }
 }

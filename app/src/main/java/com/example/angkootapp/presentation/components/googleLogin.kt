@@ -24,13 +24,10 @@ import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun GoogleSignInButton(
-    onTokenReceived: (String) -> Unit,
+    onTokenReceived: (String, String) -> Unit,
     onError: (String) -> Unit
 ) {
     val context = LocalContext.current
-
-    // 1. Konfigurasi Google Sign In
-    // Ganti "YOUR_WEB_CLIENT_ID" dengan Client ID dari Firebase Console
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestIdToken(context.getString(R.string.default_web_client_id))
         .requestEmail()
@@ -38,7 +35,6 @@ fun GoogleSignInButton(
 
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
-    // 2. Launcher untuk menangani hasil pop-up
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -46,17 +42,18 @@ fun GoogleSignInButton(
         try {
             val account = task.getResult(ApiException::class.java)
             val idToken = account?.idToken
+            val userName = account?.displayName ?: "Pengguna"
             if (idToken != null) {
-                onTokenReceived(idToken)
+                onTokenReceived(idToken,userName)
             } else {
-                onError("ID Token tidak ditemukan")
+                onError("ID Token NULL - Cek Web Client ID di strings.xml")
             }
         } catch (e: ApiException) {
-            onError("Gagal Login: ${e.message}")
+            val code = e.statusCode
+            onError("Error Code: $code | Pesan: ${e.message}")
         }
     }
 
-    // 3. UI Tombol
     OutlinedButton(
         onClick = { launcher.launch(googleSignInClient.signInIntent) },
         modifier = Modifier
