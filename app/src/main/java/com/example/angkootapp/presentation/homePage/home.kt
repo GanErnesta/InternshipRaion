@@ -33,7 +33,9 @@ import com.example.angkootapp.R
 import com.example.angkootapp.model.data.AngkotLocation
 import com.example.angkootapp.model.data.RouteData
 import com.example.angkootapp.model.data.TerminalLocation
+import com.example.angkootapp.presentation.components.CustomBottomNav
 import com.example.angkootapp.presentation.components.MapSearchBar
+import com.example.angkootapp.ui.theme.primaryColor
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapsInitializer
@@ -126,10 +128,7 @@ fun MapPage() {
                     if (!isInitialCameraSet) {
                         coroutineScope.launch {
                             cameraPositionState.animate(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    latLng,
-                                    18f
-                                ), 800
+                                CameraUpdateFactory.newLatLngZoom(latLng, 18f), 800
                             )
                             isInitialCameraSet = true
                         }
@@ -150,7 +149,7 @@ fun MapPage() {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
-            uiSettings = MapUiSettings(myLocationButtonEnabled = false)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = false, zoomControlsEnabled = false)
         ) {
             if (angkotIcon != null) {
                 angkotList.forEach { angkot ->
@@ -178,6 +177,7 @@ fun MapPage() {
                 )
             }
         }
+
         if (isSearchActive) {
             Box(
                 modifier = Modifier
@@ -193,7 +193,7 @@ fun MapPage() {
         MapSearchBar(
             modifier = Modifier.statusBarsPadding(),
             active = isSearchActive,
-            onActiveChange = {isSearchActive = it},
+            onActiveChange = { isSearchActive = it },
             onSearch = { query ->
                 coroutineScope.launch {
                     val result = searchLocation(context, query)
@@ -208,8 +208,12 @@ fun MapPage() {
                         )
                     }
                 }
+            },
+            onNotificationClick = {
+                Toast.makeText(context, "Notifikasi diklik", Toast.LENGTH_SHORT).show()
             }
         )
+
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
@@ -218,10 +222,7 @@ fun MapPage() {
                             coroutineScope.launch {
                                 cameraPositionState.animate(
                                     CameraUpdateFactory.newLatLngZoom(
-                                        LatLng(
-                                            it.latitude,
-                                            it.longitude
-                                        ), 18f
+                                        LatLng(it.latitude, it.longitude), 18f
                                     )
                                 )
                             }
@@ -233,10 +234,14 @@ fun MapPage() {
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 120.dp, end = 12.dp),
             containerColor = Color.White,
-            contentColor = Color.Blue,
+            contentColor = primaryColor,
             shape = CircleShape
         ) {
             Icon(imageVector = Icons.Default.MyLocation, contentDescription = "My Location")
+        }
+
+        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+            CustomBottomNav()
         }
     }
 }
