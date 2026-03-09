@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.angkootapp.presentation.components.CustomBottomNav
 import com.example.angkootapp.presentation.navigation.AppNavGraph
 import com.example.angkootapp.ui.theme.AngkootAppTheme
 import com.google.firebase.FirebaseApp
@@ -34,7 +35,10 @@ fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            CustomBottomNav(navController = navController)
+        }
     ) { innerPadding ->
         AppNavGraph(
             navController = navController,

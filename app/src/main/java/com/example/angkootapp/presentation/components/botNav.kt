@@ -11,16 +11,26 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.angkootapp.presentation.navigation.Screen
 
 @Composable
-fun CustomBottomNav() {
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Beranda", "Aktivitas", "Pembayaran", "Profil")
+fun CustomBottomNav(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val items: List<Screen> = listOf(
+        Screen.MapsScreen,
+        Screen.Activity,
+        Screen.Payment,
+        Screen.Profile
+    )
+    val labels = listOf("Beranda", "Aktivitas", "Pembayaran", "Profil")
     val icons = listOf(
         Icons.Default.Home,
         Icons.Default.History,
@@ -33,7 +43,6 @@ fun CustomBottomNav() {
             .height(80.dp)
             .graphicsLayer {
                 shadowElevation = 30f
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 clip = true
                 translationY = -4f
             },
@@ -45,13 +54,21 @@ fun CustomBottomNav() {
                 icon = {
                     Icon(
                         icons[index],
-                        contentDescription = item,
+                        contentDescription = labels[index],
                         modifier = Modifier.size(24.dp)
                     )
                 },
-                label = { Text(item, fontSize = 10.sp) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index },
+                label = { Text(labels[index], fontSize = 10.sp) },
+                selected = currentRoute == item.route,
+                onClick = {
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color(0xFF2CB9D1),
                     selectedTextColor = Color(0xFF2CB9D1),
