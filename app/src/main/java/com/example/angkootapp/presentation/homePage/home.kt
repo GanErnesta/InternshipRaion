@@ -11,12 +11,12 @@ import android.location.Geocoder
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
@@ -29,10 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.angkootapp.R
 import com.example.angkootapp.model.data.AngkotLocation
 import com.example.angkootapp.model.data.RouteData
 import com.example.angkootapp.model.data.TerminalLocation
+import com.example.angkootapp.presentation.components.AngkotBottomSheet
 import com.example.angkootapp.presentation.components.CustomBottomNav
 import com.example.angkootapp.presentation.components.MapSearchBar
 import com.example.angkootapp.ui.theme.primaryColor
@@ -67,7 +70,7 @@ fun searchLocation(context: Context, query: String): LatLng? {
 
 @SuppressLint("MissingPermission")
 @Composable
-fun MapPage() {
+fun MapPage(navController: NavController) {
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val angkotList = remember { mutableStateListOf<AngkotLocation>() }
@@ -76,6 +79,7 @@ fun MapPage() {
     val coroutineScope = rememberCoroutineScope()
     var currentRoute by remember { mutableStateOf<List<LatLng>>(emptyList()) }
     var isSearchActive by remember { mutableStateOf(false) }
+    var showAngkotSelection by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         MapsInitializer.initialize(context, MapsInitializer.Renderer.LATEST) {
@@ -149,7 +153,7 @@ fun MapPage() {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
-            uiSettings = MapUiSettings(myLocationButtonEnabled = false, zoomControlsEnabled = false)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = false, zoomControlsEnabled = false,)
         ) {
             if (angkotIcon != null) {
                 angkotList.forEach { angkot ->
@@ -163,7 +167,7 @@ fun MapPage() {
             if (currentRoute.isNotEmpty()) {
                 Polyline(
                     points = currentRoute,
-                    color = Color.Blue,
+                    color = Color(0xFF2CB9D1),
                     width = 15f,
                     jointType = JointType.ROUND,
                     startCap = RoundCap(),
@@ -198,14 +202,20 @@ fun MapPage() {
                 coroutineScope.launch {
                     val result = searchLocation(context, query)
                     if (result != null) {
-                        if (query.contains("Landungsari", ignoreCase = true)) {
-                            currentRoute = RouteData.UB_TO_LANDUNGSARI
-                        } else {
-                            currentRoute = emptyList()
+                        when {
+                            query.contains("Landungsari", ignoreCase = true) -> {
+                                currentRoute = RouteData.UB_TO_LANDUNGSARI
+                                showAngkotSelection = true
+                            }
+                            query.contains("Arjosari", ignoreCase = true) -> {
+                                currentRoute = emptyList()
+                                showAngkotSelection = true
+                            }
+                            else -> {
+                                currentRoute = emptyList()
+                                showAngkotSelection = false
+                            }
                         }
-                        cameraPositionState.animate(
-                            CameraUpdateFactory.newLatLngZoom(result, 15f), 1000
-                        )
                     }
                 }
             },
@@ -232,7 +242,10 @@ fun MapPage() {
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 120.dp, end = 12.dp),
+                .padding(
+                    bottom = if (showAngkotSelection) 10.dp else 10.dp,
+                    end = 12.dp
+                ),
             containerColor = Color.White,
             contentColor = primaryColor,
             shape = CircleShape
@@ -240,8 +253,12 @@ fun MapPage() {
             Icon(imageVector = Icons.Default.MyLocation, contentDescription = "My Location")
         }
 
-        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            CustomBottomNav()
+        if (showAngkotSelection) {
+            AngkotBottomSheet(
+                onDismissRequest = { showAngkotSelection = false }
+            )
         }
+
+
     }
 }

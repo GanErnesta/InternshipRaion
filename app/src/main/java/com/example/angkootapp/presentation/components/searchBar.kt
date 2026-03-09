@@ -65,7 +65,13 @@ fun MapSearchBar(
                 },
                 active = active,
                 onActiveChange = onActiveChange,
-                placeholder = { Text("Cari terminal / Angkot...", fontSize = 14.sp) },
+                placeholder = {
+                    Text(
+                        "Cari terminal / Angkot...",
+                        fontSize = 14.sp,
+                        color = Color.DarkGray
+                    )
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Search,
@@ -86,7 +92,11 @@ fun MapSearchBar(
                 },
                 colors = SearchBarDefaults.colors(
                     containerColor = Color.White,
-                    dividerColor = Color.Transparent
+                    inputFieldColors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        cursorColor = Color(0xFF2CB9D1),
+                    )
                 ),
                 content = {
                     AnimatedVisibility(
@@ -112,7 +122,8 @@ fun MapSearchBar(
                                         )
                                     },
                                     colors = ListItemDefaults.colors(
-                                        containerColor = Color.White
+                                        containerColor = Color.White,
+
                                     ),
                                     modifier = Modifier
                                         .clickable {
