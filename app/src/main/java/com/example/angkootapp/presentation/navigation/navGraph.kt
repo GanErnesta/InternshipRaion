@@ -11,10 +11,12 @@ import androidx.navigation.compose.composable
 import com.example.angkootapp.presentation.activityScreen.ActivityScreen
 import com.example.angkootapp.presentation.auth.LoginScreen
 import com.example.angkootapp.presentation.auth.RegisterScreen
+import com.example.angkootapp.presentation.bookletPage.BookletScreen
+import com.example.angkootapp.presentation.components.WelcomeCarouselScreen
 import com.example.angkootapp.presentation.homePage.MapPage
-import com.example.angkootapp.presentation.paymentScreen.PaymentScreen
 import com.example.angkootapp.presentation.profile.ProfilScreen
 import com.example.angkootapp.presentation.welcomePage.WelcomeScreen
+
 
 @Composable
 fun AppNavGraph(
@@ -23,7 +25,7 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Register.route,
+        startDestination = Screen.Welcome.route,
         modifier = modifier
     ) {
         composable(Screen.Welcome.route) {
@@ -33,6 +35,18 @@ fun AppNavGraph(
                 },
                 onRegisterClick = {
                     navController.navigate(Screen.Register.route)
+                },
+                onNextClick = {
+                    navController.navigate(Screen.WelcomeSec.route)
+                }
+            )
+        }
+        composable(Screen.WelcomeSec.route) {
+            WelcomeCarouselScreen(
+                onFinish = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -78,8 +92,8 @@ fun AppNavGraph(
             ActivityScreen(
             )
         }
-        composable(Screen.Payment.route) {
-            PaymentScreen(
+        composable(Screen.Booklet.route) {
+            BookletScreen(
             )
         }
         composable(Screen.Profile.route) {
