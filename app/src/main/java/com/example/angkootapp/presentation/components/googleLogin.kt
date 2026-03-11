@@ -44,7 +44,7 @@ fun GoogleSignInButton(
             val idToken = account?.idToken
             val userName = account?.displayName ?: "Pengguna"
             if (idToken != null) {
-                onTokenReceived(idToken,userName)
+                onTokenReceived(idToken, userName)
             } else {
                 onError("ID Token NULL - Cek Web Client ID di strings.xml")
             }
@@ -55,7 +55,13 @@ fun GoogleSignInButton(
     }
 
     OutlinedButton(
-        onClick = { launcher.launch(googleSignInClient.signInIntent) },
+        onClick = {
+            googleSignInClient.signOut().addOnCompleteListener {
+                googleSignInClient.revokeAccess().addOnCompleteListener {
+                    launcher.launch(googleSignInClient.signInIntent)
+                }
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),

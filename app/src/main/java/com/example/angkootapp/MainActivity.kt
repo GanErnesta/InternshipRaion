@@ -8,15 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.angkootapp.presentation.components.CustomBottomNav
 import com.example.angkootapp.presentation.navigation.AppNavGraph
+import com.example.angkootapp.presentation.navigation.Screen
 import com.example.angkootapp.ui.theme.AngkootAppTheme
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,13 +33,25 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            CustomBottomNav(navController = navController)
+            val noBottomNavRoutes = listOf(
+                Screen.Welcome.route,
+                Screen.WelcomeSec.route,
+                Screen.WelcomeThird.route,
+                Screen.WelcomeFourth.route,
+                Screen.Login.route,
+                Screen.Register.route
+            )
+
+            if (currentRoute !in noBottomNavRoutes) {
+                CustomBottomNav(navController = navController)
+            }
         }
     ) { innerPadding ->
         AppNavGraph(

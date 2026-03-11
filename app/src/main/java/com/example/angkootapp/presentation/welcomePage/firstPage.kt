@@ -2,94 +2,123 @@ package com.example.angkootapp.presentation.welcomePage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color
 import com.example.angkootapp.R
+
 @Composable
 fun WelcomeScreen(
     onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onNextClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF2CB9D1))
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.bgwelcome),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 80.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .weight(1.5f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Selamat Datang",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Lebih mudah naik angkot dengan angkoot",
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.85f)
+            Image(
+                painter = painterResource(id = R.drawable.angkot1),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize(0.7f)
+                ,
+                contentScale = ContentScale.Fit
             )
         }
 
-        Row(
+        Box(
             modifier = Modifier
+                .weight(0.9f)
                 .fillMaxWidth()
-                .height(100.dp)
-                .navigationBarsPadding()
-                .align(Alignment.BottomCenter)
+                .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
+                .background(Color.White)
+                .padding(32.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .clickable { onRegisterClick() },
-                contentAlignment = Alignment.Center
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = "Daftar",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
-            }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 32.dp)
+                ) {}
 
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 40.dp))
-                    .background(Color(0xFFD9E1E5))
-                    .clickable { onLoginClick() },
-                contentAlignment = Alignment.Center
-            ) {
                 Text(
-                    text = "Masuk",
-                    fontSize = 18.sp,
+                    text = "Temukan angkot terdekatmu",
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F4C5C)
+                    color = Color(0xFF0F4C5C),
+                    textAlign = TextAlign.Center
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Temukan rute angkot terdekat dan\nmelakukan perjalanan dengan lebih cepat.",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 20.sp
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = { onNextClick() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0097B2))
+                ) {
+                    Text(
+                        text = "Mulai",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Button(
+                    onClick = {onLoginClick()},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                ) {
+                    Text(
+                        text = "Lewati",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.LightGray,
+                    )
+                }
+
             }
         }
     }

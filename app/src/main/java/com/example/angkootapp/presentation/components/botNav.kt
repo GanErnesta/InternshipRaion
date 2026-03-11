@@ -2,21 +2,21 @@ package com.example.angkootapp.presentation.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.angkootapp.R
 import com.example.angkootapp.presentation.navigation.Screen
 
 @Composable
@@ -24,18 +24,20 @@ fun CustomBottomNav(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val items: List<Screen> = listOf(
+    val items = listOf(
         Screen.MapsScreen,
         Screen.Activity,
-        Screen.Payment,
+        Screen.Booklet,
         Screen.Profile
     )
-    val labels = listOf("Beranda", "Aktivitas", "Pembayaran", "Profil")
+
+    val labels = listOf("Beranda", "Aktivitas", "Booklet", "Profil")
+
     val icons = listOf(
-        Icons.Default.Home,
-        Icons.Default.History,
-        Icons.Default.Payment,
-        Icons.Default.Person
+        R.drawable.home,
+        R.drawable.aktivitas,
+        R.drawable.booklet,
+        R.drawable.profile
     )
 
     NavigationBar(
@@ -53,7 +55,8 @@ fun CustomBottomNav(navController: NavController) {
             NavigationBarItem(
                 icon = {
                     Icon(
-                        icons[index],
+                        // Panggil painterResource di sini
+                        painter = painterResource(id = icons[index]),
                         contentDescription = labels[index],
                         modifier = Modifier.size(24.dp)
                     )
