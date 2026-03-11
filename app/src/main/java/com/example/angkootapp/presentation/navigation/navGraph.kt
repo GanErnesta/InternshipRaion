@@ -8,9 +8,12 @@ import com.example.angkootapp.model.viewModel.RegisterViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.angkootapp.presentation.activityScreen.ActivityScreen
 import com.example.angkootapp.presentation.auth.LoginScreen
 import com.example.angkootapp.presentation.auth.RegisterScreen
 import com.example.angkootapp.presentation.homePage.MapPage
+import com.example.angkootapp.presentation.paymentScreen.PaymentScreen
+import com.example.angkootapp.presentation.profile.ProfilScreen
 import com.example.angkootapp.presentation.welcomePage.WelcomeScreen
 
 @Composable
@@ -20,7 +23,7 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.MapsScreen.route,
+        startDestination = Screen.Register.route,
         modifier = modifier
     ) {
         composable(Screen.Welcome.route) {
@@ -68,7 +71,20 @@ fun AppNavGraph(
             )
         }
         composable(Screen.MapsScreen.route) {
-            MapPage(
+            MapPage(navController = navController
+            )
+        }
+        composable(Screen.Activity.route) {
+            ActivityScreen(
+            )
+        }
+        composable(Screen.Payment.route) {
+            PaymentScreen(
+            )
+        }
+        composable(Screen.Profile.route) {
+            ProfilScreen(
+                navController = navController
             )
         }
     }
