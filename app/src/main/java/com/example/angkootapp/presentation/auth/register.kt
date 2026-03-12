@@ -1,10 +1,11 @@
 package com.example.angkootapp.presentation.auth
 
-import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -44,81 +44,86 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var isChecked by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmpasswordVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(viewModel.generalError) {
-        viewModel.generalError?.let {
-            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF8F9FA))) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(280.dp),
+            color = Color(0xFF268696),
+            shape = RoundedCornerShape(bottomStart = 60.dp, bottomEnd = 60.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(top = 60.dp)
+            ) {
+                Text(
+                    text = "Selamat Datang!",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = "Daftar untuk membuat akun",
+                    fontSize = 14.sp,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+            }
         }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.bgwelcome),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
 
         IconButton(
             onClick = onBackClick,
-            modifier = Modifier
-                .padding(top = 30.dp, start = 16.dp)
-                .align(Alignment.TopStart)
+            modifier = Modifier.padding(top = 40.dp, start = 16.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "Back",
-                tint = Color(0xFFB4B4B4)
-            )
+            Surface(
+                shape = CircleShape,
+                color = Color.White.copy(0.2f),
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    tint = Color.White,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
 
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.85f)
-                .align(Alignment.BottomCenter),
-            shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
-            color = Color.White
+                .padding(horizontal = 24.dp)
+                .padding(top = 220.dp, bottom = 20.dp),
+            shape = RoundedCornerShape(32.dp),
+            color = Color.White,
+            shadowElevation = 8.dp
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 32.dp)
+                    .padding(horizontal = 24.dp)
                     .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Daftar",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F4C5C)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
+                Spacer(modifier = Modifier.height(60.dp)) // Ruang untuk icon profil melayang
                 CustomInputField(
                     value = name,
                     onValueChange = { name = it },
-                    label = "Nama Lengkap",
-                    placeholder = "Masukkan Nama",
+                    label = "NAMA LENGKAP",
+                    placeholder = "Masukkan nama lengkap",
                     leadingIcon = R.drawable.people,
                     isError = viewModel.nameError != null,
                     supportingText = viewModel.nameError
                 )
-
                 CustomInputField(
                     value = phone,
                     onValueChange = { phone = it },
-                    label = "No. Telp",
-                    placeholder = "8123456789",
-                    leadingIcon = R.drawable.email,
+                    label = "NO TELP",
+                    placeholder = "Masukkan no telp",
+                    leadingIcon = R.drawable.telp, // Pastikan ada ic phone
                     keyboardType = KeyboardType.Number,
-                    prefix = "+62 ",
                     isError = viewModel.phoneError != null,
                     supportingText = viewModel.phoneError
                 )
@@ -126,18 +131,17 @@ fun RegisterScreen(
                 CustomInputField(
                     value = email,
                     onValueChange = { email = it },
-                    label = "Email",
-                    placeholder = "Masukkan Email",
+                    label = "EMAIL",
+                    placeholder = "Masukkan email",
                     leadingIcon = R.drawable.email,
                     isError = viewModel.emailError != null,
                     supportingText = viewModel.emailError
                 )
-
                 CustomInputField(
                     value = password,
                     onValueChange = { password = it },
-                    label = "Kata Sandi",
-                    placeholder = "Kata Sandi",
+                    label = "KATA SANDI",
+                    placeholder = "Masukkan kata sandi",
                     leadingIcon = R.drawable.lock,
                     isPassword = true,
                     passwordVisible = passwordVisible,
@@ -145,89 +149,68 @@ fun RegisterScreen(
                     isError = viewModel.passwordError != null,
                     supportingText = viewModel.passwordError
                 )
-
                 CustomInputField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = "Konfirmasi Kata Sandi",
-                    placeholder = "Konfirmasi Kata Sandi",
+                    label = "KONFIRMASI KATA SANDI",
+                    placeholder = "Masukkan kata sandi",
                     leadingIcon = R.drawable.lock,
                     isPassword = true,
                     passwordVisible = confirmpasswordVisible,
-                    onPasswordToggle = { confirmpasswordVisible = !confirmpasswordVisible },
-                    isError = password != confirmPassword && confirmPassword.isNotEmpty(),
-                    supportingText = if (password != confirmPassword && confirmPassword.isNotEmpty()) "Password tidak cocok" else null
+                    onPasswordToggle = { confirmpasswordVisible = !confirmpasswordVisible }
                 )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = Color(0xFF2CB9D1),
-                            uncheckedColor = Color.Gray
-                        )
-                    )
-                    Text(
-                        text = "Saya setuju dengan persyaratan dan penggunaan.",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                }
-
+                Spacer(modifier = Modifier.height(24.dp))
                 PrimaryButton(
                     text = "Daftar",
                     onClick = {
-                        if (!isChecked) {
-                            Toast.makeText(context, "Setujui persyaratan dahulu", Toast.LENGTH_SHORT).show()
-                        } else if (password != confirmPassword) {
-                            Toast.makeText(context, "Konfirmasi password salah", Toast.LENGTH_SHORT).show()
-                        } else {
-                            viewModel.registerEmail(
-                                name = name,
-                                phone = phone,
-                                email = email,
-                                pass = password,
-                                onSuccess = {
-                                    Toast.makeText(context, "Berhasil Daftar!", Toast.LENGTH_SHORT).show()
-                                    onRegisterSuccess()
-                                }
-                            )
-                        }
+                        viewModel.registerEmail(name, phone, email, password, onSuccess = onRegisterSuccess)
                     }
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Gray)) {
-                        append("Sudah Punya Akun? ")
-                    }
-                    pushStringAnnotation(tag = "login", annotation = "login")
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color(0xFF2CB9D1),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("Masuk Sekarang!!")
-                    }
-                    pop()
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Divider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                    Text(" Atau ", color = Color.Gray, fontSize = 12.sp)
+                    Divider(modifier = Modifier.weight(1f), color = Color.LightGray)
                 }
-
-                Text(
-                    text = annotatedString,
-                    fontSize = 14.sp,
-                    modifier = Modifier.clickable { onLoginClick() }
+                Spacer(modifier = Modifier.height(24.dp))
+                GoogleSignInButton(
+                    onTokenReceived = { token, name -> },
+                    onError = { }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("Sudah punya akun? ")
+                        withStyle(SpanStyle(color = Color(0xFF2CB9D1), fontWeight = FontWeight.Bold)) {
+                            append("Masuk")
+                        }
+                    },
+                    modifier = Modifier.clickable { onLoginClick() },
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
 
+        Surface(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 180.dp) // Posisi tepat di perbatasan header dan card
+                .size(80.dp),
+            shape = CircleShape,
+            color = Color.White,
+            shadowElevation = 4.dp,
+            border = BorderStroke(4.dp, Color(0xFFE0F2F1))
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.people),
+                contentDescription = null,
+                tint = Color(0xFF268696),
+                modifier = Modifier.padding(16.dp)
+            )
+        }
         if (viewModel.isLoading) {
             LoadingOverlay()
         }
