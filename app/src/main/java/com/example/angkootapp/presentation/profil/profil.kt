@@ -168,9 +168,9 @@ private fun ProfilStatsCard(uiState: ProfileUiState) {
                 .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem(iconResId = R.drawable.dompet,     label = "Dompet",     value = uiState.walletBalance)
-            StatItem(iconResId = R.drawable.perjalanan, label = "Perjalanan", value = uiState.tripCount.toString())
-            StatItem(iconResId = R.drawable.perjalanan, label = "Fitur",      value = uiState.featureCount.toString())
+            StatItem(iconResId = R.drawable.ic_tambah,     label = "Top Up Saldo",     value = uiState.walletBalance)
+            StatItem(iconResId = R.drawable.dompet, label = "Dompet", value = uiState.tripCount.toString())
+            StatItem(iconResId = R.drawable.perjalanan, label = "Perjalanan",      value = uiState.featureCount.toString())
         }
     }
 }
