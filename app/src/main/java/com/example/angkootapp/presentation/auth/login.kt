@@ -201,7 +201,6 @@ fun LoginScreen(
             }
         }
 
-        // 4. Floating Profile Icon (Tengah)
         Surface(
             modifier = Modifier
                 .align(Alignment.TopCenter)

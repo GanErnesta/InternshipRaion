@@ -36,7 +36,6 @@ class ProfileViewModel : ViewModel() {
         loadProfile()
     }
 
-    // 1. Fungsi Ambil Data (Sinkronisasi)
     fun loadProfile() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
@@ -44,7 +43,6 @@ class ProfileViewModel : ViewModel() {
             try {
                 val currentUser = auth.currentUser
                 if (currentUser != null) {
-                    // Ambil dokumen dari koleksi "users" berdasarkan UID
                     val document = db.collection("users").document(currentUser.uid).get().await()
 
                     if (document.exists()) {
@@ -97,7 +95,6 @@ class ProfileViewModel : ViewModel() {
                     )
                     db.collection("users").document(uid).update(updates).await()
 
-                    // Panggil lagi loadProfile agar UI langsung berubah
                     loadProfile()
                     onSelection(true)
                 }
@@ -108,7 +105,6 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    // 3. Fungsi Logout
     fun logout() {
         auth.signOut()
         _uiState.update { ProfileUiState() } // Reset state saat logout

@@ -1,8 +1,7 @@
 package com.example.angkootapp.presentation.components
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.FirebaseFirestore
@@ -34,10 +32,7 @@ fun AngkotBottomSheet(
     onConfirmOrder: (Context, Int, Int) -> Unit
 ) {
     val context = LocalContext.current
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
-        confirmValueChange = { true }
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     var passengerCount by remember { mutableIntStateOf(1) }
     var selectedAngkot by remember { mutableStateOf<String?>(null) }
@@ -51,14 +46,7 @@ fun AngkotBottomSheet(
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         containerColor = Color.White,
-        tonalElevation = 8.dp,
-        dragHandle = {
-            BottomSheetDefaults.DragHandle(
-                width = 40.dp,
-                height = 4.dp,
-                color = Color(0xFFE0E0E0)
-            )
-        }
+        dragHandle = { BottomSheetDefaults.DragHandle(color = Color(0xFFE0E0E0)) }
     ) {
         Column(
             modifier = Modifier
@@ -93,7 +81,7 @@ fun AngkotBottomSheet(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                    Box {
                         Row(
                             modifier = Modifier
                                 .clickable { expanded = true }
@@ -118,85 +106,56 @@ fun AngkotBottomSheet(
                                 fontWeight = FontWeight.Bold,
                                 color = if (selectedPayment == "Metode Pembayaran") Color.Gray else Color.Black
                             )
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                tint = Color.Black
-                            )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.Black)
                         }
 
-                        MaterialTheme(
-                            colorScheme = MaterialTheme.colorScheme.copy(surface = Color.White)
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.background(Color.White).width(160.dp)
                         ) {
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                offset = DpOffset(x = 0.dp, y = 4.dp),
-                                modifier = Modifier
-                                    .background(Color.White)
-                                    .width(160.dp)
-                                    .border(1.dp, Color(0xFFF1F1F1), RoundedCornerShape(12.dp))
-                            ) {
-                                paymentOptions.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(
-                                                text = option,
-                                                color = Color.Black,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        },
-                                        leadingIcon = {
-                                            Icon(
-                                                imageVector = if (option == "QRIS") Icons.Default.QrCodeScanner else Icons.Default.Payments,
-                                                contentDescription = null,
-                                                tint = Color(0xFF2CB9D1),
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        },
-                                        onClick = {
-                                            selectedPayment = option
-                                            expanded = false
-                                        },
-                                        modifier = Modifier.background(Color.White)
-                                    )
-                                }
+                            paymentOptions.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option, color = Color.Black, fontSize = 14.sp) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = if (option == "QRIS") Icons.Default.QrCodeScanner else Icons.Default.Payments,
+                                            contentDescription = null,
+                                            tint = Color(0xFF2CB9D1),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedPayment = option
+                                        expanded = false
+                                    }
+                                )
                             }
                         }
                     }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .background(Color(0xFFF1F9FB), CircleShape)
-                            .padding(horizontal = 4.dp)
+                        modifier = Modifier.background(Color(0xFFF1F9FB), CircleShape).padding(horizontal = 4.dp)
                     ) {
                         IconButton(onClick = { if (passengerCount > 1) passengerCount-- }) {
                             Icon(Icons.Default.Remove, contentDescription = null, tint = Color(0xFF2CB9D1))
                         }
-                        Text(
-                            text = passengerCount.toString(),
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            fontSize = 16.sp
-                        )
+                        Text(text = passengerCount.toString(), fontWeight = FontWeight.Bold, color = Color.Black)
                         IconButton(onClick = { passengerCount++ }) {
                             Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF2CB9D1))
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 val totalHarga = 5000 * passengerCount
 
                 Button(
                     onClick = { showConfirmationDialog = true },
                     enabled = selectedPayment != "Metode Pembayaran",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2CB9D1),
@@ -205,11 +164,10 @@ fun AngkotBottomSheet(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Pesan Sekarang", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
-                        Text("Rp $totalHarga", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
+                        Text("Pesan Sekarang", fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("Rp $totalHarga", fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
 
@@ -217,12 +175,8 @@ fun AngkotBottomSheet(
                     OrderConfirmationDialog(
                         onDismissRequest = { showConfirmationDialog = false },
                         onConfirm = { ctx ->
-                            // Simpan ke Firestore
                             val db = FirebaseFirestore.getInstance()
-                            val sdfTanggal = SimpleDateFormat("dd MMM", Locale("id", "ID"))
-                            val sdfJam = SimpleDateFormat("HH:mm", Locale("id", "ID"))
-                            val sekarang = Date()
-
+                            val now = Date()
                             val orderData = hashMapOf(
                                 "namaAngkot" to (if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"),
                                 "rute" to (if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"),
@@ -230,22 +184,21 @@ fun AngkotBottomSheet(
                                 "hargaLabel" to "${totalHarga / 1000}K",
                                 "penumpang" to "$passengerCount Orang",
                                 "metodePembayaran" to selectedPayment,
-                                "status" to "selesai",
-                                "tanggal" to sdfTanggal.format(sekarang),
-                                "jam" to sdfJam.format(sekarang),
-                                "timestamp" to Timestamp.now(),
+                                "status" to "berjalan",
+                                "tanggal" to SimpleDateFormat("dd MMM", Locale("id", "ID")).format(now),
+                                "jam" to SimpleDateFormat("HH:mm", Locale("id", "ID")).format(now),
+                                "timestamp" to Timestamp(now),
                                 "co2Saved" to 0.8
                             )
 
-                            db.collection("orders")
-                                .add(orderData)
+                            db.collection("orders").add(orderData)
                                 .addOnSuccessListener {
                                     showConfirmationDialog = false
-                                    onDismissRequest() // Tutup BottomSheet
                                     onConfirmOrder(ctx, totalHarga, passengerCount)
+                                    onDismissRequest()
                                 }
                                 .addOnFailureListener {
-                                    // Kamu bisa tambah Toast di sini jika gagal
+                                    Toast.makeText(ctx, "Gagal memesan.", Toast.LENGTH_SHORT).show()
                                 }
                         }
                     )
@@ -283,18 +236,10 @@ fun AngkotRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
+                    Text(text = name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black)
                     if (isSelected) {
                         Spacer(modifier = Modifier.width(8.dp))
-                        Surface(
-                            color = Color(0xFFE1F5F9),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
+                        Surface(color = Color(0xFFE1F5F9), shape = RoundedCornerShape(8.dp)) {
                             Text(
                                 text = "Dipilih",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
@@ -305,51 +250,13 @@ fun AngkotRow(
                         }
                     }
                 }
-                Text(
-                    text = price,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = Color.Black
-                )
+                Text(text = price, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black)
             }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Route,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = Color(0xFF2CB9D1)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = route, fontSize = 13.sp, color = Color.Gray)
-            }
-
+            Text(text = route, fontSize = 13.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(8.dp).background(Color(0xFF4CAF50), CircleShape))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "$seats kursi tersedia",
-                        fontSize = 13.sp,
-                        color = Color.Black
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Schedule,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = Color.LightGray
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "12 menit", fontSize = 13.sp, color = Color.LightGray)
-                }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = "● $seats kursi tersedia", fontSize = 13.sp, color = Color(0xFF4CAF50))
+                Text(text = "🕒 12 menit", fontSize = 13.sp, color = Color.LightGray)
             }
         }
     }

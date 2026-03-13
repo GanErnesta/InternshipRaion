@@ -19,7 +19,6 @@ class TopUpViewModel : ViewModel() {
     private fun loadData() {
         _uiState.update { it.copy(isLoading = true) }
 
-        // Data Dummy (Nanti ganti dengan pengambilan data dari Firestore)
         val dummyList = listOf(
             TransactionData("Top Up Saldo", "12 Okt 2023, 14:20", "+Rp 20.000", true, "Berhasil"),
             TransactionData("Bayar Angkot ADL", "11 Okt 2023, 08:45", "-Rp 5.000", false, "Selesai"),

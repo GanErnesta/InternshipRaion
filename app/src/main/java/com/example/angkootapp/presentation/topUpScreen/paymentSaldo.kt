@@ -65,7 +65,6 @@ fun PaymentSaldoScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 1. Header Section (Angkoot Wallet)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -95,7 +94,6 @@ fun PaymentSaldoScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 2. Input Nominal Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
@@ -143,7 +141,6 @@ fun PaymentSaldoScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 3. Pilih Nominal Cepat
             Text(
                 "Pilih Nominal Cepat",
                 fontSize = 15.sp,
@@ -176,7 +173,6 @@ fun PaymentSaldoScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 4. Info Box
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = Color(0xFFE0F2F1).copy(alpha = 0.5f),
@@ -201,7 +197,6 @@ fun PaymentSaldoScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 5. Tombol Konfirmasi
             Button(
                 onClick = { onConfirmClick(nominalInput) },
                 modifier = Modifier
@@ -222,7 +217,6 @@ fun PaymentSaldoScreen(
     }
 }
 
-// Helper function untuk border
 @Composable
 fun borderStroke(width: androidx.compose.ui.unit.Dp, color: Color) =
     androidx.compose.foundation.BorderStroke(width, color)

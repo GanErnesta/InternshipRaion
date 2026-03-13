@@ -104,12 +104,10 @@ fun BookletScreen() {
             .background(BackgroundPage)
             .verticalScroll(rememberScrollState())
     ) {
-        // ── Top Bar ──
         BookletTopBar()
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ── SDGs Education ──
         SectionTitle(title = "SDGs Education")
         Spacer(modifier = Modifier.height(12.dp))
         SdgHorizontalList(items = sdgItems)
@@ -135,9 +133,6 @@ fun BookletScreen() {
     }
 }
 
-// ──────────────────────────────────────────────
-// TOP BAR
-// ──────────────────────────────────────────────
 @Composable
 private fun BookletTopBar() {
     Row(
@@ -247,7 +242,7 @@ private fun SdgCard(item: SdgItem) {
             Spacer(modifier = Modifier.height(14.dp))
 
             OutlinedButton(
-                onClick         = { /* TODO: navigate to detail */ },
+                onClick         = { },
                 modifier        = Modifier
                     .fillMaxWidth()
                     .height(34.dp),
@@ -329,10 +324,4 @@ private fun ArtikelRow(item: ArtikelItem) {
             )
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun BookletScreenPreview() {
-    BookletScreen()
 }

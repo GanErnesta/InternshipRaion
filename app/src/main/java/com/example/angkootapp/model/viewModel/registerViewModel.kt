@@ -15,7 +15,6 @@ class RegisterViewModel(
     private val repository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
-    // Instance Firebase
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
@@ -44,14 +43,12 @@ class RegisterViewModel(
         pass: String,
         onSuccess: () -> Unit
     ) {
-        // Reset Errors
         nameError = null
         phoneError = null
         emailError = null
         passwordError = null
         generalError = null
 
-        // Validasi Lokal
         var hasError = false
         if (name.isBlank()) {
             nameError = "Nama tidak boleh kosong"
@@ -87,26 +84,23 @@ class RegisterViewModel(
         viewModelScope.launch {
             isLoading = true
 
-            // 1. Proses Daftar ke Firebase Auth melalui Repository
             val result = repository.signUpWithEmail(email, pass)
 
             result.onSuccess {
                 try {
                     val uid = auth.currentUser?.uid
                     if (uid != null) {
-                        // 2. Jika Auth Berhasil, Langsung simpan data ke Firestore
                         val userMap = hashMapOf(
                             "uid" to uid,
                             "name" to name,
                             "phone" to phone,
                             "email" to email,
-                            "balance" to "0K",     // Data default awal
+                            "balance" to "0K",
                             "tripCount" to 0,
                             "featureCount" to 0,
                             "photoUrl" to ""
                         )
 
-                        // Simpan ke koleksi "users" dengan ID dokumen = UID user
                         db.collection("users").document(uid).set(userMap).await()
 
                         isLoading = false

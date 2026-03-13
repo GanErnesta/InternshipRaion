@@ -26,7 +26,6 @@ fun RiwayatContent() {
     val db = FirebaseFirestore.getInstance()
     var orders by remember { mutableStateOf<List<Map<String, Any>>>(listOf()) }
 
-    // Efek untuk mengambil data saat halaman dibuka
     LaunchedEffect(Unit) {
         db.collection("orders")
             .whereEqualTo("status", "selesai")
@@ -54,10 +53,6 @@ fun RiwayatContent() {
             letterSpacing = 1.sp,
             modifier = Modifier.padding(bottom = 10.dp)
         )
-
-//        RiwayatItem(iconRes = R.drawable.ic_mobil, namaAngkot = "Angkot ADL", info = "Kemarin, 14:00 • 12K")
-//        Spacer(modifier = Modifier.height(8.dp))
-//        RiwayatItem(iconRes = R.drawable.ic_mobil, namaAngkot = "Angkot AG", info = "01 Mar, 09:15 • 15K")
 
         Spacer(modifier = Modifier.height(16.dp))
 

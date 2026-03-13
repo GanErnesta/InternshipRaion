@@ -25,17 +25,15 @@ import com.example.angkootapp.model.viewModel.ProfileViewModel
 @Composable
 fun AkunScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel() // Sambungkan ke ViewModel
+    viewModel: ProfileViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // State Lokal untuk menampung inputan user sebelum di-save
     var namaLengkap by remember { mutableStateOf("") }
     var noTelp by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
-    // Efek untuk mengisi data awal dari Firebase ke TextField
     LaunchedEffect(uiState.name, uiState.phone, uiState.email) {
         namaLengkap = uiState.name
         noTelp = uiState.phone
@@ -48,7 +46,6 @@ fun AkunScreen(
             .background(Color(0xFFF2F4F7))
             .verticalScroll(rememberScrollState())
     ) {
-        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +73,6 @@ fun AkunScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
 
-            // TOMBOL SIMPAN
             TextButton(
                 onClick = {
                     viewModel.updateProfile(namaLengkap, noTelp) { success ->
@@ -104,7 +100,6 @@ fun AkunScreen(
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = Color(0xFF3BBFBF))
         }
 
-        // Form
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -128,9 +123,9 @@ fun AkunScreen(
             AkunInputField(
                 label = "EMAIL",
                 value = email,
-                onValueChange = { /* Email biasanya tidak bisa diubah di sini */ },
+                onValueChange = {  },
                 iconRes = R.drawable.ic_email_akun,
-                readOnly = true // Email dikunci karena dari Auth
+                readOnly = true
             )
         }
 
