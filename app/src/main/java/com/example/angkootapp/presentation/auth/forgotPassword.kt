@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.angkootapp.R
 import com.example.angkootapp.presentation.components.CustomInputField
 import com.example.angkootapp.presentation.components.PrimaryButton
+import com.example.angkootapp.ui.theme.primaryColor
 import java.net.URLDecoder
 
 @Composable
@@ -45,22 +46,35 @@ fun ForgotPasswordScreen(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Verifikasi Link", fontWeight = FontWeight.Bold) },
+            containerColor = Color.White,
+            title = {
+                Text(
+                    text = "Verifikasi Link",
+                    fontWeight = FontWeight.Bold,
+                    color = primaryColor
+                )
+            },
             text = {
                 Column {
                     Text(
                         text = "Silakan buka email dan tempel link reset password yang dikirimkan di bawah ini.",
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        color = Color.Black.copy(alpha = 0.7f)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = verificationInput,
                         onValueChange = { verificationInput = it },
-                        label = { Text("Tempel Link atau Kode") },
-                        placeholder = { Text("https://angkootapp.firebaseapp.com/...") },
+                        label = { Text("Tempel Link atau Kode", color = Color.Gray) },
+                        placeholder = { Text("AhioYtfCg...", color = Color.Gray ) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        singleLine = true
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF268696),
+                            unfocusedBorderColor = Color.LightGray,
+                            focusedLabelColor = Color(0xFF268696)
+                        )
                     )
                     Text(
                         text = "Tips: Cukup salin seluruh alamat link dari email.",
@@ -74,7 +88,6 @@ fun ForgotPasswordScreen(
                 TextButton(
                     onClick = {
                         if (verificationInput.isNotBlank()) {
-                            // Proses pengambilan kode yang bersih
                             val cleanCode = getOobCodeFromUrl(verificationInput)
                             showDialog = false
                             onNavigateToReset(cleanCode)
