@@ -1,8 +1,8 @@
 package com.example.angkootapp.presentation.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -17,37 +17,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.angkootapp.R
-import com.example.angkootapp.model.viewModel.RegisterViewModel
-import com.example.angkootapp.presentation.components.*
+import com.example.angkootapp.presentation.components.CustomInputField
+import com.example.angkootapp.presentation.components.PrimaryButton
 
 @Composable
-fun RegisterScreen(
+fun ResetPasswordScreen(
+    oobCode: String,
     onBackClick: () -> Unit,
-    onRegisterSuccess: () -> Unit,
-    onLoginClick: () -> Unit,
-    viewModel: RegisterViewModel = viewModel()
+    onResetSuccess: () -> Unit
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
 
-    var name by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var confirmpasswordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF8F9FA))) {
+        // 1. Header Biru
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,26 +54,27 @@ fun RegisterScreen(
                 modifier = Modifier.padding(top = 60.dp)
             ) {
                 Text(
-                    text = "Selamat Datang!",
+                    text = "Kata Sandi Baru",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = "Daftar untuk membuat akun",
+                    text = "Buat kata sandi baru yang kuat",
                     fontSize = 14.sp,
                     color = Color.White.copy(alpha = 0.8f)
                 )
             }
         }
 
+        // 2. Tombol Back
         IconButton(
             onClick = onBackClick,
             modifier = Modifier.padding(top = 40.dp, start = 16.dp)
         ) {
             Surface(
                 shape = CircleShape,
-                color = Color.White.copy(0.2f),
+                color = Color.White.copy(alpha = 0.2f),
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
@@ -91,6 +86,7 @@ fun RegisterScreen(
             }
         }
 
+        // 3. Card Putih
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,93 +104,63 @@ fun RegisterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(60.dp))
-                CustomInputField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = "NAMA LENGKAP",
-                    placeholder = "Masukkan nama lengkap",
-                    leadingIcon = R.drawable.profile,
-                    isError = viewModel.nameError != null,
-                    supportingText = viewModel.nameError
-                )
-                CustomInputField(
-                    value = phone,
-                    onValueChange = { phone = it },
-                    label = "NO TELP",
-                    placeholder = "Masukkan no telp",
-                    leadingIcon = R.drawable.telp, // Pastikan ada ic phone
-                    keyboardType = KeyboardType.Number,
-                    isError = viewModel.phoneError != null,
-                    supportingText = viewModel.phoneError
-                )
 
                 CustomInputField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = "EMAIL",
-                    placeholder = "Masukkan email",
-                    leadingIcon = R.drawable.email,
-                    isError = viewModel.emailError != null,
-                    supportingText = viewModel.emailError
-                )
-                CustomInputField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = "KATA SANDI",
-                    placeholder = "Masukkan kata sandi",
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
+                    label = "KATA SANDI BARU",
+                    placeholder = "Masukkan kata sandi baru",
                     leadingIcon = R.drawable.lock,
                     isPassword = true,
                     passwordVisible = passwordVisible,
                     onPasswordToggle = { passwordVisible = !passwordVisible },
-                    isError = viewModel.passwordError != null,
-                    supportingText = viewModel.passwordError
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 CustomInputField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
                     label = "KONFIRMASI KATA SANDI",
-                    placeholder = "Masukkan kata sandi",
+                    placeholder = "Ulangi kata sandi baru",
                     leadingIcon = R.drawable.lock,
                     isPassword = true,
-                    passwordVisible = confirmpasswordVisible,
-                    onPasswordToggle = { confirmpasswordVisible = !confirmpasswordVisible }
+                    passwordVisible = confirmPasswordVisible,
+                    onPasswordToggle = { confirmPasswordVisible = !confirmPasswordVisible },
                 )
-                Spacer(modifier = Modifier.height(24.dp))
-                PrimaryButton(
-                    text = "Daftar",
-                    onClick = {
-                        viewModel.registerEmail(name, phone, email, password, onSuccess = onRegisterSuccess)
-                    },
 
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Divider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                    Text(" Atau ", color = Color.Gray, fontSize = 12.sp)
-                    Divider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-                GoogleSignInButton(
-                    onTokenReceived = { token, name -> },
-                    onError = { }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append("Sudah punya akun? ")
+                Spacer(modifier = Modifier.height(32.dp))
+
+                PrimaryButton(
+                    text = "Konfirmasi",
+                    isLoading = isLoading,
+                    onClick = {
+                        if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                            Toast.makeText(context, "Password tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                        } else if (newPassword != confirmPassword) {
+                            Toast.makeText(context, "Password tidak cocok!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            isLoading = true
+                            auth.confirmPasswordReset(oobCode, newPassword)
+                                .addOnCompleteListener { task ->
+                                    isLoading = false
+                                    if (task.isSuccessful) {
+                                        Toast.makeText(context, "Kata sandi berhasil diubah!", Toast.LENGTH_SHORT).show()
+                                        onResetSuccess()
+                                    } else {
+                                        val errorMessage = task.exception?.message ?: "Terjadi kesalahan"
+                                        Toast.makeText(context, "Gagal: $errorMessage", Toast.LENGTH_LONG).show()
+                                    }
+                                }
                         }
-                        withStyle(SpanStyle(color = Color(0xFF2CB9D1), fontWeight = FontWeight.Bold)) {
-                            append("Masuk")
-                        }
-                    },
-                    modifier = Modifier.clickable { onLoginClick() },
-                    fontSize = 14.sp
+                    }
                 )
+
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
 
+        // 4. Floating Icon
         Surface(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -206,14 +172,11 @@ fun RegisterScreen(
             border = BorderStroke(4.dp, Color(0xFFE0F2F1))
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.profile),
+                painter = painterResource(id = R.drawable.lock),
                 contentDescription = null,
                 tint = Color(0xFF268696),
                 modifier = Modifier.padding(16.dp)
             )
-        }
-        if (viewModel.isLoading) {
-            LoadingOverlay()
         }
     }
 }

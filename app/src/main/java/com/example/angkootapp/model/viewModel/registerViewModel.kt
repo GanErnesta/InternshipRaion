@@ -6,11 +6,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.angkootapp.model.data.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class RegisterViewModel(
     private val repository: AuthRepository = AuthRepository()
 ) : ViewModel() {
+
+    // Instance Firebase
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     var isLoading by mutableStateOf(false)
         private set
@@ -37,14 +44,16 @@ class RegisterViewModel(
         pass: String,
         onSuccess: () -> Unit
     ) {
+        // Reset Errors
         nameError = null
         phoneError = null
         emailError = null
         passwordError = null
         generalError = null
 
+        // Validasi Lokal
         var hasError = false
-        if (name.isBlank()){
+        if (name.isBlank()) {
             nameError = "Nama tidak boleh kosong"
             hasError = true
         }
@@ -64,6 +73,7 @@ class RegisterViewModel(
             emailError = "Format email tidak valid"
             hasError = true
         }
+
         if (pass.isBlank()) {
             passwordError = "Password tidak boleh kosong"
             hasError = true
@@ -71,30 +81,56 @@ class RegisterViewModel(
             passwordError = "Password minimal harus 8 karakter"
             hasError = true
         }
+
         if (hasError) return
+
         viewModelScope.launch {
             isLoading = true
+
+            // 1. Proses Daftar ke Firebase Auth melalui Repository
             val result = repository.signUpWithEmail(email, pass)
-            isLoading = false
 
             result.onSuccess {
-                onSuccess()
+                try {
+                    val uid = auth.currentUser?.uid
+                    if (uid != null) {
+                        // 2. Jika Auth Berhasil, Langsung simpan data ke Firestore
+                        val userMap = hashMapOf(
+                            "uid" to uid,
+                            "name" to name,
+                            "phone" to phone,
+                            "email" to email,
+                            "balance" to "0K",     // Data default awal
+                            "tripCount" to 0,
+                            "featureCount" to 0,
+                            "photoUrl" to ""
+                        )
+
+                        // Simpan ke koleksi "users" dengan ID dokumen = UID user
+                        db.collection("users").document(uid).set(userMap).await()
+
+                        isLoading = false
+                        onSuccess()
+                    }
+                } catch (e: Exception) {
+                    isLoading = false
+                    generalError = "Gagal menyimpan ke database: ${e.message}"
+                }
             }
+
             result.onFailure { exception ->
+                isLoading = false
                 val message = exception.message ?: ""
                 when {
                     message.contains("email-already-in-use") -> {
                         emailError = "Email sudah terdaftar"
                     }
-
                     message.contains("invalid-email") -> {
                         emailError = "Format email salah"
                     }
-
                     message.contains("network-request-failed") -> {
                         generalError = "Koneksi internet bermasalah"
                     }
-
                     else -> {
                         generalError = message.ifBlank { "Pendaftaran Gagal" }
                     }

@@ -46,7 +46,15 @@ fun MainScreen() {
                 Screen.WelcomeThird.route,
                 Screen.WelcomeFourth.route,
                 Screen.Login.route,
-                Screen.Register.route
+                Screen.Register.route,
+                Screen.ForgotPassword.route,
+                Screen.ResetPassword.route,
+                Screen.Syarat.route,
+                Screen.Akun.route,
+                Screen.YourSaldo.route,
+                Screen.TopUpSaldo.route,
+                Screen.SaldoSuccess.route,
+                Screen.PaymentSaldo.route
             )
 
             if (currentRoute !in noBottomNavRoutes) {

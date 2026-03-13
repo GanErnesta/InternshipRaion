@@ -2,6 +2,7 @@ package com.example.angkootapp.presentation.components
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -28,8 +30,10 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AngkotBottomSheet(
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onConfirmOrder: (Context, Int, Int) -> Unit
 ) {
+    val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
         confirmValueChange = { true }
@@ -185,8 +189,10 @@ fun AngkotBottomSheet(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val totalHarga = 5000 * passengerCount
+
                 Button(
-                    onClick = { showConfirmationDialog = true},
+                    onClick = { showConfirmationDialog = true },
                     enabled = selectedPayment != "Metode Pembayaran",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -203,47 +209,47 @@ fun AngkotBottomSheet(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Pesan Sekarang", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
-                        Text("Rp ${5 * passengerCount}.000", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
-                    }
-                    if (showConfirmationDialog) {
-                        OrderConfirmationDialog(
-                            onDismissRequest = { showConfirmationDialog = false },
-                            onConfirm = {
-                                val db = FirebaseFirestore.getInstance()
-
-                                val sdfTanggal = SimpleDateFormat("dd MMM", Locale("id", "ID"))
-                                val sdfJam = SimpleDateFormat("HH:mm", Locale("id", "ID"))
-                                val tanggalSekarang = sdfTanggal.format(Date())
-                                val jamSekarang = sdfJam.format(Date())
-
-                                val orderData = hashMapOf(
-                                    "namaAngkot" to (if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"),
-                                    "rute" to (if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"),
-                                    "tarif" to (5 * passengerCount * 1000),
-                                    "hargaLabel" to "${5 * passengerCount}K",
-                                    "penumpang" to "$passengerCount Orang",
-                                    "metodePembayaran" to selectedPayment,
-                                    "status" to "selesai",
-                                    "tanggal" to tanggalSekarang,
-                                    "jam" to jamSekarang,
-                                    "timestamp" to Timestamp.now(),
-                                    "co2Saved" to 0.8
-                                )
-
-                                db.collection("orders")
-                                    .add(orderData)
-                                    .addOnSuccessListener {
-                                        showConfirmationDialog = false
-                                        onDismissRequest() // Menutup BottomSheet
-                                    }
-                                    .addOnFailureListener { e ->
-                                        // Handle error jika perlu
-                                    }
-                            }
-                        )
+                        Text("Rp $totalHarga", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
                     }
                 }
 
+                if (showConfirmationDialog) {
+                    OrderConfirmationDialog(
+                        onDismissRequest = { showConfirmationDialog = false },
+                        onConfirm = { ctx ->
+                            // Simpan ke Firestore
+                            val db = FirebaseFirestore.getInstance()
+                            val sdfTanggal = SimpleDateFormat("dd MMM", Locale("id", "ID"))
+                            val sdfJam = SimpleDateFormat("HH:mm", Locale("id", "ID"))
+                            val sekarang = Date()
+
+                            val orderData = hashMapOf(
+                                "namaAngkot" to (if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"),
+                                "rute" to (if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"),
+                                "tarif" to totalHarga,
+                                "hargaLabel" to "${totalHarga / 1000}K",
+                                "penumpang" to "$passengerCount Orang",
+                                "metodePembayaran" to selectedPayment,
+                                "status" to "selesai",
+                                "tanggal" to sdfTanggal.format(sekarang),
+                                "jam" to sdfJam.format(sekarang),
+                                "timestamp" to Timestamp.now(),
+                                "co2Saved" to 0.8
+                            )
+
+                            db.collection("orders")
+                                .add(orderData)
+                                .addOnSuccessListener {
+                                    showConfirmationDialog = false
+                                    onDismissRequest() // Tutup BottomSheet
+                                    onConfirmOrder(ctx, totalHarga, passengerCount)
+                                }
+                                .addOnFailureListener {
+                                    // Kamu bisa tambah Toast di sini jika gagal
+                                }
+                        }
+                    )
+                }
             }
         }
     }
