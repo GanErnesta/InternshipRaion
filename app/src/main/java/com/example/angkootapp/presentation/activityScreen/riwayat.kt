@@ -17,9 +17,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.angkootapp.R
+import androidx.compose.runtime.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 @Composable
 fun RiwayatContent() {
+    val db = FirebaseFirestore.getInstance()
+    var orders by remember { mutableStateOf<List<Map<String, Any>>>(listOf()) }
+
+    // Efek untuk mengambil data saat halaman dibuka
+    LaunchedEffect(Unit) {
+        db.collection("orders")
+            .whereEqualTo("status", "selesai")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .addSnapshotListener { value, error ->
+                if (value != null) {
+                    orders = value.documents.map { it.data ?: emptyMap() }
+                }
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,11 +55,25 @@ fun RiwayatContent() {
             modifier = Modifier.padding(bottom = 10.dp)
         )
 
-        RiwayatItem(iconRes = R.drawable.ic_mobil, namaAngkot = "Angkot ADL", info = "Kemarin, 14:00 • 12K")
-        Spacer(modifier = Modifier.height(8.dp))
-        RiwayatItem(iconRes = R.drawable.ic_mobil, namaAngkot = "Angkot AG", info = "01 Mar, 09:15 • 15K")
+//        RiwayatItem(iconRes = R.drawable.ic_mobil, namaAngkot = "Angkot ADL", info = "Kemarin, 14:00 • 12K")
+//        Spacer(modifier = Modifier.height(8.dp))
+//        RiwayatItem(iconRes = R.drawable.ic_mobil, namaAngkot = "Angkot AG", info = "01 Mar, 09:15 • 15K")
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        orders.forEach { order ->
+            val nama = order["namaAngkot"]?.toString() ?: "Angkot"
+            val tgl = order["tanggal"]?.toString() ?: ""
+            val jam = order["jam"]?.toString() ?: ""
+            val harga = order["hargaLabel"]?.toString() ?: ""
+
+            RiwayatItem(
+                iconRes = R.drawable.ic_mobil,
+                namaAngkot = nama,
+                info = "$tgl, $jam • $harga"
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
     }
 }
 

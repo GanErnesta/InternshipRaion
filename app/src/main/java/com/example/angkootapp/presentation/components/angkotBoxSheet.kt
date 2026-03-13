@@ -21,12 +21,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AngkotBottomSheet(
     onDismissRequest: () -> Unit,
-    onConfirmOrder: (Context, Int, Int) -> Unit) {
+    onConfirmOrder: (Context, Int, Int) -> Unit
+) {
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
@@ -186,10 +192,7 @@ fun AngkotBottomSheet(
                 val totalHarga = 5000 * passengerCount
 
                 Button(
-                    onClick = {
-                        if (selectedPayment == "QRIS") showConfirmationDialog = true
-                        else { onDismissRequest() }
-                    },
+                    onClick = { showConfirmationDialog = true },
                     enabled = selectedPayment != "Metode Pembayaran",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -214,9 +217,36 @@ fun AngkotBottomSheet(
                     OrderConfirmationDialog(
                         onDismissRequest = { showConfirmationDialog = false },
                         onConfirm = { ctx ->
-                            showConfirmationDialog = false
-                            onDismissRequest()
-                            onConfirmOrder(ctx, totalHarga, passengerCount)
+                            // Simpan ke Firestore
+                            val db = FirebaseFirestore.getInstance()
+                            val sdfTanggal = SimpleDateFormat("dd MMM", Locale("id", "ID"))
+                            val sdfJam = SimpleDateFormat("HH:mm", Locale("id", "ID"))
+                            val sekarang = Date()
+
+                            val orderData = hashMapOf(
+                                "namaAngkot" to (if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"),
+                                "rute" to (if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"),
+                                "tarif" to totalHarga,
+                                "hargaLabel" to "${totalHarga / 1000}K",
+                                "penumpang" to "$passengerCount Orang",
+                                "metodePembayaran" to selectedPayment,
+                                "status" to "selesai",
+                                "tanggal" to sdfTanggal.format(sekarang),
+                                "jam" to sdfJam.format(sekarang),
+                                "timestamp" to Timestamp.now(),
+                                "co2Saved" to 0.8
+                            )
+
+                            db.collection("orders")
+                                .add(orderData)
+                                .addOnSuccessListener {
+                                    showConfirmationDialog = false
+                                    onDismissRequest() // Tutup BottomSheet
+                                    onConfirmOrder(ctx, totalHarga, passengerCount)
+                                }
+                                .addOnFailureListener {
+                                    // Kamu bisa tambah Toast di sini jika gagal
+                                }
                         }
                     )
                 }
