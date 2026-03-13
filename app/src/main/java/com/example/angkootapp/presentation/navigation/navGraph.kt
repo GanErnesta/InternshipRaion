@@ -9,8 +9,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.angkootapp.presentation.activityScreen.ActivityScreen
+import com.example.angkootapp.presentation.auth.ForgotPasswordScreen
 import com.example.angkootapp.presentation.auth.LoginScreen
 import com.example.angkootapp.presentation.auth.RegisterScreen
+import com.example.angkootapp.presentation.auth.ResetPasswordScreen
 import com.example.angkootapp.presentation.bookletPage.BookletScreen
 import com.example.angkootapp.presentation.components.WelcomeCarouselScreen
 import com.example.angkootapp.presentation.homePage.MapPage
@@ -57,13 +59,14 @@ fun AppNavGraph(
                     navController.navigate(Screen.Register.route)
                 },
                 onLoginSucces = {
-                    navController.navigate(Screen.MapsScreen.route){
-                        popUpTo(Screen.Login.route) {inclusive = true}
+                    navController.navigate(Screen.MapsScreen.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
                 onRegisterClick = {
                     navController.navigate(Screen.Register.route)
                 },
+                onForgotPasswordClick = { navController.navigate(Screen.ForgotPassword.route) },
                 viewModel = loginViewModel
             )
         }
@@ -74,8 +77,8 @@ fun AppNavGraph(
                     navController.popBackStack()
                 },
                 onRegisterSuccess = {
-                    navController.navigate(Screen.Login.route){
-                        popUpTo(Screen.Register.route) { inclusive = true}
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Register.route) { inclusive = true }
                     }
                 },
                 onLoginClick = {
@@ -84,8 +87,31 @@ fun AppNavGraph(
                 viewModel = registerViewModel
             )
         }
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToReset = { codeFromUser ->
+                    navController.navigate(Screen.ResetPassword.route + "/$codeFromUser")
+                })
+        }
+        composable(Screen.ResetPassword.route + "/{oobCode}") { backStackEntry ->
+            val oobCode = backStackEntry.arguments?.getString("oobCode") ?: ""
+
+            ResetPasswordScreen(
+                oobCode = oobCode,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onResetSuccess = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Screen.MapsScreen.route) {
-            MapPage(navController = navController
+            MapPage(
+                navController = navController
             )
         }
         composable(Screen.Activity.route) {

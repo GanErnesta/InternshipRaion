@@ -2,10 +2,6 @@ package com.example.angkootapp.presentation.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -23,23 +19,19 @@ import com.example.angkootapp.presentation.navigation.Screen
 fun CustomBottomNav(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
     val items = listOf(
         Screen.MapsScreen,
         Screen.Activity,
         Screen.Booklet,
         Screen.Profile
     )
-
     val labels = listOf("Beranda", "Aktivitas", "Booklet", "Profil")
-
     val icons = listOf(
         R.drawable.home,
         R.drawable.aktivitas,
         R.drawable.booklet,
         R.drawable.profile
     )
-
     NavigationBar(
         modifier = Modifier
             .height(80.dp)
@@ -55,7 +47,6 @@ fun CustomBottomNav(navController: NavController) {
             NavigationBarItem(
                 icon = {
                     Icon(
-                        // Panggil painterResource di sini
                         painter = painterResource(id = icons[index]),
                         contentDescription = labels[index],
                         modifier = Modifier.size(24.dp)
