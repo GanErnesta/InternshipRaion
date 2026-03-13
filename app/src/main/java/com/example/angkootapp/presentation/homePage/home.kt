@@ -11,9 +11,6 @@ import android.location.Geocoder
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -29,14 +26,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.angkootapp.R
 import com.example.angkootapp.model.data.AngkotLocation
 import com.example.angkootapp.model.data.RouteData
 import com.example.angkootapp.model.data.TerminalLocation
+import com.example.angkootapp.model.viewModel.midtransViewModel
 import com.example.angkootapp.presentation.components.AngkotBottomSheet
-import com.example.angkootapp.presentation.components.CustomBottomNav
 import com.example.angkootapp.presentation.components.MapSearchBar
 import com.example.angkootapp.ui.theme.primaryColor
 import com.google.android.gms.location.*
@@ -47,6 +44,7 @@ import com.google.maps.android.compose.*
 import kotlinx.coroutines.launch
 import java.util.Locale
 
+// Fungsi helper untuk icon angkot
 fun bitmapFromResource(context: Context, resId: Int, width: Int, height: Int): BitmapDescriptor {
     val drawable = ContextCompat.getDrawable(context, resId)
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -56,6 +54,7 @@ fun bitmapFromResource(context: Context, resId: Int, width: Int, height: Int): B
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 
+// Fungsi Geocoding sederhana
 fun searchLocation(context: Context, query: String): LatLng? {
     return try {
         val geocoder = Geocoder(context, Locale.getDefault())
@@ -63,15 +62,14 @@ fun searchLocation(context: Context, query: String): LatLng? {
         if (!addresses.isNullOrEmpty()) {
             LatLng(addresses[0].latitude, addresses[0].longitude)
         } else null
-    } catch (e: Exception) {
-        null
-    }
+    } catch (e: Exception) { null }
 }
 
 @SuppressLint("MissingPermission")
 @Composable
 fun MapPage(navController: NavController) {
     val context = LocalContext.current
+    val paymentViewModel: midtransViewModel = viewModel()
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val angkotList = remember { mutableStateListOf<AngkotLocation>() }
     val terminalList = remember { mutableStateListOf<TerminalLocation>() }
@@ -81,10 +79,9 @@ fun MapPage(navController: NavController) {
     var isSearchActive by remember { mutableStateOf(false) }
     var showAngkotSelection by remember { mutableStateOf(false) }
 
+    // Initial Data
     LaunchedEffect(Unit) {
-        MapsInitializer.initialize(context, MapsInitializer.Renderer.LATEST) {
-            mapsInitialized = true
-        }
+        MapsInitializer.initialize(context, MapsInitializer.Renderer.LATEST) { mapsInitialized = true }
         angkotList.add(AngkotLocation("1", "N 1234 AB", LatLng(-7.9252407, 112.59555)))
         angkotList.add(AngkotLocation("2", "N 5678 CD", LatLng(-7.9336105, 112.6559776)))
         angkotList.add(AngkotLocation("3", "N 1011 EF", LatLng(-8.0261702, 112.6429637)))
@@ -94,32 +91,24 @@ fun MapPage(navController: NavController) {
         terminalList.add(TerminalLocation("3", "Hamid Rusdi", LatLng(-8.0261702, 112.6429637)))
     }
 
+    // Permission Handling
     var hasLocationPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        )
+        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted -> hasLocationPermission = granted }
 
-    var isInitialCameraSet by remember { mutableStateOf(false) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(-7.983908, 112.621391), 12f)
     }
 
     val angkotIcon = remember(mapsInitialized) {
-        if (mapsInitialized) {
-            bitmapFromResource(context, R.drawable.angkot_icon, 75, 90)
-        } else {
-            null
-        }
+        if (mapsInitialized) bitmapFromResource(context, R.drawable.angkot_icon, 200, 200) else null
     }
 
+    // Location Updates
     DisposableEffect(hasLocationPermission) {
         if (!hasLocationPermission) {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -127,17 +116,7 @@ fun MapPage(navController: NavController) {
         }
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { location ->
-                    val latLng = LatLng(location.latitude, location.longitude)
-                    if (!isInitialCameraSet) {
-                        coroutineScope.launch {
-                            cameraPositionState.animate(
-                                CameraUpdateFactory.newLatLngZoom(latLng, 18f), 800
-                            )
-                            isInitialCameraSet = true
-                        }
-                    }
-                }
+                // Lokasi terkini bisa diproses di sini jika perlu
             }
         }
         fusedLocationClient.requestLocationUpdates(
@@ -153,45 +132,24 @@ fun MapPage(navController: NavController) {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
-            uiSettings = MapUiSettings(myLocationButtonEnabled = false, zoomControlsEnabled = false,)
+            uiSettings = MapUiSettings(myLocationButtonEnabled = false, zoomControlsEnabled = false)
         ) {
             if (angkotIcon != null) {
                 angkotList.forEach { angkot ->
-                    Marker(
-                        state = MarkerState(position = angkot.position),
-                        title = "Angkot: ${angkot.platNomor}",
-                        icon = angkotIcon
-                    )
+                    Marker(state = MarkerState(position = angkot.position), title = "Angkot: ${angkot.platNomor}", icon = angkotIcon)
                 }
             }
             if (currentRoute.isNotEmpty()) {
-                Polyline(
-                    points = currentRoute,
-                    color = Color(0xFF2CB9D1),
-                    width = 15f,
-                    jointType = JointType.ROUND,
-                    startCap = RoundCap(),
-                    endCap = RoundCap()
-                )
+                Polyline(points = currentRoute, color = Color(0xFF2CB9D1), width = 15f, jointType = JointType.ROUND, startCap = RoundCap(), endCap = RoundCap())
             }
             terminalList.forEach { terminal ->
-                Marker(
-                    state = MarkerState(position = terminal.position),
-                    title = "Terminal: ${terminal.name}"
-                )
+                Marker(state = MarkerState(position = terminal.position), title = "Terminal: ${terminal.name}")
             }
         }
 
+        // Overlay saat search aktif
         if (isSearchActive) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        onClick = { isSearchActive = false },
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-            )
+            Box(modifier = Modifier.fillMaxSize().clickable(onClick = { isSearchActive = false }, indication = null, interactionSource = remember { MutableInteractionSource() }))
         }
 
         MapSearchBar(
@@ -202,26 +160,17 @@ fun MapPage(navController: NavController) {
                 coroutineScope.launch {
                     val result = searchLocation(context, query)
                     if (result != null) {
-                        when {
-                            query.contains("Landungsari", ignoreCase = true) -> {
-                                currentRoute = RouteData.UB_TO_LANDUNGSARI
-                                showAngkotSelection = true
-                            }
-                            query.contains("Arjosari", ignoreCase = true) -> {
-                                currentRoute = emptyList()
-                                showAngkotSelection = true
-                            }
-                            else -> {
-                                currentRoute = emptyList()
-                                showAngkotSelection = false
-                            }
+                        cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(result, 15f))
+                        if (query.contains("Landungsari", ignoreCase = true)) {
+                            currentRoute = RouteData.UB_TO_LANDUNGSARI
+                            showAngkotSelection = true
+                        } else {
+                            showAngkotSelection = false
                         }
                     }
                 }
             },
-            onNotificationClick = {
-                Toast.makeText(context, "Notifikasi diklik", Toast.LENGTH_SHORT).show()
-            }
+            onNotificationClick = { Toast.makeText(context, "Notifikasi", Toast.LENGTH_SHORT).show() }
         )
 
         FloatingActionButton(
@@ -229,36 +178,24 @@ fun MapPage(navController: NavController) {
                 coroutineScope.launch {
                     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                         location?.let {
-                            coroutineScope.launch {
-                                cameraPositionState.animate(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                        LatLng(it.latitude, it.longitude), 18f
-                                    )
-                                )
-                            }
+                            coroutineScope.launch { cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), 18f)) }
                         }
                     }
                 }
             },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    bottom = if (showAngkotSelection) 10.dp else 10.dp,
-                    end = 12.dp
-                ),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = if (showAngkotSelection) 300.dp else 24.dp, end = 16.dp),
             containerColor = Color.White,
             contentColor = primaryColor,
             shape = CircleShape
-        ) {
-            Icon(imageVector = Icons.Default.MyLocation, contentDescription = "My Location")
-        }
+        ) { Icon(Icons.Default.MyLocation, contentDescription = "My Location") }
 
         if (showAngkotSelection) {
             AngkotBottomSheet(
-                onDismissRequest = { showAngkotSelection = false }
+                onDismissRequest = { showAngkotSelection = false },
+                onConfirmOrder = { ctx, nominal, count ->
+                    paymentViewModel.bayarAngkot(ctx, nominal, count)
+                }
             )
         }
-
-
     }
 }

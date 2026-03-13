@@ -1,5 +1,6 @@
 package com.example.angkootapp.presentation.components
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,9 +21,10 @@ import com.example.angkootapp.R
 @Composable
 fun OrderConfirmationDialog(
     onDismissRequest: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: (Context) -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
+        val context = LocalContext.current
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -35,7 +38,6 @@ fun OrderConfirmationDialog(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Icon Angkot (Sesuaikan R.drawable dengan nama file icon kamu)
                 Image(
                     painter = painterResource(id = R.drawable.angkot_confirm),
                     contentDescription = null,
@@ -85,7 +87,7 @@ fun OrderConfirmationDialog(
 
                     // Tombol Pesan
                     Button(
-                        onClick = onConfirm,
+                        onClick = { onConfirm(context) },
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),
