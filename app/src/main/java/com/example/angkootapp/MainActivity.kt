@@ -46,7 +46,9 @@ fun MainScreen() {
                 Screen.WelcomeThird.route,
                 Screen.WelcomeFourth.route,
                 Screen.Login.route,
-                Screen.Register.route
+                Screen.Register.route,
+                Screen.ForgotPassword.route,
+                Screen.ResetPassword.route
             )
 
             if (currentRoute !in noBottomNavRoutes) {

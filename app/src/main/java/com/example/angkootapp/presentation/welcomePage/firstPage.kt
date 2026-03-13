@@ -39,7 +39,7 @@ fun WelcomeScreen(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.angkot1),
+                painter = painterResource(id = R.drawable.angkoot),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize(0.7f)
