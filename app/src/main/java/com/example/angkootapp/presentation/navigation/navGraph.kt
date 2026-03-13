@@ -16,7 +16,12 @@ import com.example.angkootapp.presentation.auth.ResetPasswordScreen
 import com.example.angkootapp.presentation.bookletPage.BookletScreen
 import com.example.angkootapp.presentation.components.WelcomeCarouselScreen
 import com.example.angkootapp.presentation.homePage.MapPage
+import com.example.angkootapp.presentation.profil.AkunScreen
+import com.example.angkootapp.presentation.profil.SyaratScreen
 import com.example.angkootapp.presentation.profile.ProfilScreen
+import com.example.angkootapp.presentation.topUpScreen.TopUpSaldoScreen
+//import com.example.angkootapp.presentation.topUpScreen.TopUpSaldoScreen
+import com.example.angkootapp.presentation.topUpScreen.YourSaldoScreen
 import com.example.angkootapp.presentation.welcomePage.WelcomeScreen
 
 
@@ -116,6 +121,7 @@ fun AppNavGraph(
         }
         composable(Screen.Activity.route) {
             ActivityScreen(
+                navController = navController
             )
         }
         composable(Screen.Booklet.route) {
@@ -124,6 +130,36 @@ fun AppNavGraph(
         }
         composable(Screen.Profile.route) {
             ProfilScreen(
+                navController = navController
+            )
+        }
+        composable(Screen.Akun.route) {
+            AkunScreen(
+                navController = navController
+            )
+        }
+        composable(Screen.Syarat.route) {
+            SyaratScreen(
+                navController = navController
+            )
+        }
+        composable(Screen.TopUpSaldo.route) {
+            TopUpSaldoScreen(
+                onBackClick = {navController.popBackStack()},
+                onConfirmClick = {}
+            )
+        }
+        composable(Screen.YourSaldo.route) {
+            YourSaldoScreen(
+                navController = navController,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onTopUpClick = {navController.navigate("topup")}
+            )
+        }
+        composable(Screen.Syarat.route) {
+            SyaratScreen(
                 navController = navController
             )
         }

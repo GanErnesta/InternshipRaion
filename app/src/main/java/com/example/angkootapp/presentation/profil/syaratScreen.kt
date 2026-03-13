@@ -128,9 +128,3 @@ fun SyaratClause(
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun SyaratScreenPreview() {
-    SyaratScreen(navController = rememberNavController())
-}

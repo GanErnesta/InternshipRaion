@@ -2,6 +2,7 @@ package com.example.angkootapp.presentation.components
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -23,8 +25,9 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AngkotBottomSheet(
-    onDismissRequest: () -> Unit
-) {
+    onDismissRequest: () -> Unit,
+    onConfirmOrder: (Context, Int, Int) -> Unit) {
+    val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
         confirmValueChange = { true }
@@ -180,8 +183,13 @@ fun AngkotBottomSheet(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val totalHarga = 5000 * passengerCount
+
                 Button(
-                    onClick = { showConfirmationDialog = true},
+                    onClick = {
+                        if (selectedPayment == "QRIS") showConfirmationDialog = true
+                        else { onDismissRequest() }
+                    },
                     enabled = selectedPayment != "Metode Pembayaran",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -198,18 +206,20 @@ fun AngkotBottomSheet(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Pesan Sekarang", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
-                        Text("Rp ${5 * passengerCount}.000", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
-                    }
-                    if (showConfirmationDialog) {
-                        OrderConfirmationDialog(
-                            onDismissRequest = { showConfirmationDialog = false },
-                            onConfirm = {
-                                showConfirmationDialog = false
-                            }
-                        )
+                        Text("Rp $totalHarga", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
                     }
                 }
 
+                if (showConfirmationDialog) {
+                    OrderConfirmationDialog(
+                        onDismissRequest = { showConfirmationDialog = false },
+                        onConfirm = { ctx ->
+                            showConfirmationDialog = false
+                            onDismissRequest()
+                            onConfirmOrder(ctx, totalHarga, passengerCount)
+                        }
+                    )
+                }
             }
         }
     }
