@@ -19,6 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -204,7 +209,36 @@ fun AngkotBottomSheet(
                         OrderConfirmationDialog(
                             onDismissRequest = { showConfirmationDialog = false },
                             onConfirm = {
-                                showConfirmationDialog = false
+                                val db = FirebaseFirestore.getInstance()
+
+                                val sdfTanggal = SimpleDateFormat("dd MMM", Locale("id", "ID"))
+                                val sdfJam = SimpleDateFormat("HH:mm", Locale("id", "ID"))
+                                val tanggalSekarang = sdfTanggal.format(Date())
+                                val jamSekarang = sdfJam.format(Date())
+
+                                val orderData = hashMapOf(
+                                    "namaAngkot" to (if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"),
+                                    "rute" to (if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"),
+                                    "tarif" to (5 * passengerCount * 1000),
+                                    "hargaLabel" to "${5 * passengerCount}K",
+                                    "penumpang" to "$passengerCount Orang",
+                                    "metodePembayaran" to selectedPayment,
+                                    "status" to "selesai",
+                                    "tanggal" to tanggalSekarang,
+                                    "jam" to jamSekarang,
+                                    "timestamp" to Timestamp.now(),
+                                    "co2Saved" to 0.8
+                                )
+
+                                db.collection("orders")
+                                    .add(orderData)
+                                    .addOnSuccessListener {
+                                        showConfirmationDialog = false
+                                        onDismissRequest() // Menutup BottomSheet
+                                    }
+                                    .addOnFailureListener { e ->
+                                        // Handle error jika perlu
+                                    }
                             }
                         )
                     }
