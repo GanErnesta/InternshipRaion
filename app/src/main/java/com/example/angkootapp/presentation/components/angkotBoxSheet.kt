@@ -106,13 +106,19 @@ fun AngkotBottomSheet(
                                 fontWeight = FontWeight.Bold,
                                 color = if (selectedPayment == "Metode Pembayaran") Color.Gray else Color.Black
                             )
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.Black)
+                            Icon(
+                                Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Black
+                            )
                         }
 
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
-                            modifier = Modifier.background(Color.White).width(160.dp)
+                            modifier = Modifier
+                                .background(Color.White)
+                                .width(160.dp)
                         ) {
                             paymentOptions.forEach { option ->
                                 DropdownMenuItem(
@@ -136,14 +142,28 @@ fun AngkotBottomSheet(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.background(Color(0xFFF1F9FB), CircleShape).padding(horizontal = 4.dp)
+                        modifier = Modifier
+                            .background(Color(0xFFF1F9FB), CircleShape)
+                            .padding(horizontal = 4.dp)
                     ) {
                         IconButton(onClick = { if (passengerCount > 1) passengerCount-- }) {
-                            Icon(Icons.Default.Remove, contentDescription = null, tint = Color(0xFF2CB9D1))
+                            Icon(
+                                Icons.Default.Remove,
+                                contentDescription = null,
+                                tint = Color(0xFF2CB9D1)
+                            )
                         }
-                        Text(text = passengerCount.toString(), fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text(
+                            text = passengerCount.toString(),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
                         IconButton(onClick = { passengerCount++ }) {
-                            Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF2CB9D1))
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                tint = Color(0xFF2CB9D1)
+                            )
                         }
                     }
                 }
@@ -155,7 +175,9 @@ fun AngkotBottomSheet(
                 Button(
                     onClick = { showConfirmationDialog = true },
                     enabled = selectedPayment != "Metode Pembayaran",
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2CB9D1),
@@ -172,20 +194,34 @@ fun AngkotBottomSheet(
                 }
 
                 if (showConfirmationDialog) {
+                    // Tentukan data berdasarkan angkot yang dipilih user
+                    val namaDipilih = if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"
+                    val ruteDipilih =
+                        if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"
+                    val totalHarga = 5000 * passengerCount
+                    val hargaLabel = "${totalHarga / 1000}K"
+
                     OrderConfirmationDialog(
+                        namaAngkot = namaDipilih,   // Kirim parameter yang diminta
+                        rute = ruteDipilih,         // Kirim parameter yang diminta
+                        harga = hargaLabel,         // Kirim parameter yang diminta
                         onDismissRequest = { showConfirmationDialog = false },
                         onConfirm = { ctx ->
+                            // Gunakan viewModel untuk simpan agar lebih bersih,
+                            // atau tetap gunakan manual db.collection seperti di bawah jika sudah terlanjur:
                             val db = FirebaseFirestore.getInstance()
                             val now = Date()
                             val orderData = hashMapOf(
-                                "namaAngkot" to (if (selectedAngkot == "ADL") "Angkot ADL" else "Angkot AL"),
-                                "rute" to (if (selectedAngkot == "ADL") "Arjosari - Dinoyo - Landungsari" else "Arjosari - Landungsari"),
+                                "namaAngkot" to namaDipilih,
+                                "rute" to ruteDipilih,
                                 "tarif" to totalHarga,
-                                "hargaLabel" to "${totalHarga / 1000}K",
+                                "hargaLabel" to hargaLabel,
                                 "penumpang" to "$passengerCount Orang",
                                 "metodePembayaran" to selectedPayment,
-                                "status" to "berjalan",
-                                "tanggal" to SimpleDateFormat("dd MMM", Locale("id", "ID")).format(now),
+                                "status" to "berjalan", // Disini statusnya 'berjalan' agar muncul di tab Sedang Berjalan
+                                "tanggal" to SimpleDateFormat("dd MMM", Locale("id", "ID")).format(
+                                    now
+                                ),
                                 "jam" to SimpleDateFormat("HH:mm", Locale("id", "ID")).format(now),
                                 "timestamp" to Timestamp(now),
                                 "co2Saved" to 0.8
@@ -236,7 +272,12 @@ fun AngkotRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black)
+                    Text(
+                        text = name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
                     if (isSelected) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Surface(color = Color(0xFFE1F5F9), shape = RoundedCornerShape(8.dp)) {
@@ -250,11 +291,19 @@ fun AngkotRow(
                         }
                     }
                 }
-                Text(text = price, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black)
+                Text(
+                    text = price,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.Black
+                )
             }
             Text(text = route, fontSize = 13.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(12.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(text = "● $seats kursi tersedia", fontSize = 13.sp, color = Color(0xFF4CAF50))
                 Text(text = "🕒 12 menit", fontSize = 13.sp, color = Color.LightGray)
             }
