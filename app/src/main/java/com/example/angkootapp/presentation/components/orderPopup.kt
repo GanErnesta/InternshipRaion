@@ -17,12 +17,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.angkootapp.R
+import com.example.angkootapp.model.viewModel.ActivityViewModel
 
 @Composable
 fun OrderConfirmationDialog(
+    namaAngkot: String,
+    rute: String,
+    harga: String,
     onDismissRequest: () -> Unit,
-    onConfirm: (Context) -> Unit
+    onConfirm: (Context) -> Unit,
+    viewModel: ActivityViewModel = viewModel()
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         val context = LocalContext.current
@@ -45,60 +51,72 @@ fun OrderConfirmationDialog(
                     modifier = Modifier.size(80.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp)) // Jarak antar gambar dan judul
 
                 Text(
-                    text = "Anda yakin ingin memesan?",
+                    text = "Pesan $namaAngkot?",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF001F3F),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp)) // Jarak antar judul dan rute
 
                 Text(
-                    text = "Setelah anda klik pesan, angkot yang anda pesan tidak dapat dibatalkan.",
+                    text = "Rute: $rute",
                     fontSize = 14.sp,
                     color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 20.sp
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(4.dp)) // Jarak kecil antara rute dan peringatan
+
+                Text(
+                    text = "Setelah anda klik pesan, angkot tidak dapat dibatalkan.",
+                    fontSize = 13.sp,
+                    color = Color.LightGray,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.sp // Agar teks peringatan yang panjang tidak rapat antar baris
+                )
+
+                Spacer(modifier = Modifier.height(28.dp)) // Jarak sebelum tombol
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    // Tombol Batal
                     Button(
                         onClick = onDismissRequest,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFF1F1F1),
-                            contentColor = Color.Gray
-                        ),
+                        modifier = Modifier.weight(1f).height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF1F1F1), contentColor = Color.Gray),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Batal", fontWeight = FontWeight.Bold)
                     }
 
+                    // Tombol Pesan (Dinamis)
                     Button(
                         onClick = {
                             try {
+                                // Menyimpan data dinamis ke Firestore
+                                viewModel.saveOrderToFirestore(
+                                    namaAngkot = namaAngkot,
+                                    rute = rute,
+                                    hargaLabel = harga,
+                                    tarif = 5000, // Bisa kamu buat dinamis juga jika perlu
+                                    metode = "QRIS",
+                                    penumpang = "1 Orang"
+                                )
                                 onConfirm(context)
                             } catch (e: Exception) {
-                                Log.e("OrderDialog", "Error saat klik pesan: ${e.message}")
+                                Log.e("OrderDialog", "Error: ${e.message}")
                             }
                         },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2CB9D1)
-                        ),
+                        modifier = Modifier.weight(1f).height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2CB9D1)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Pesan", fontWeight = FontWeight.Bold, color = Color.White)

@@ -17,13 +17,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.angkootapp.R
+import com.example.angkootapp.model.viewModel.ActivityViewModel
 import com.example.angkootapp.presentation.navigation.Screen
 import com.example.angkootapp.ui.theme.primaryColor
 
 @Composable
-fun ActivityScreen(navController: NavController, currentProgress: Float) {
+fun ActivityScreen(
+    navController: NavController,
+    currentProgress: Float,
+    viewModel: ActivityViewModel = viewModel()
+) {
+    // State untuk memilih antara tab "Sedang Berjalan" (0) atau "Riwayat" (1)
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Column(
@@ -31,6 +38,7 @@ fun ActivityScreen(navController: NavController, currentProgress: Float) {
             .fillMaxSize()
             .background(Color(0xFFF2F4F7))
     ) {
+        // --- HEADER ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -45,6 +53,7 @@ fun ActivityScreen(navController: NavController, currentProgress: Float) {
             )
         }
 
+        // --- TAB SELECTOR (Sedang Berjalan | Riwayat) ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,18 +82,19 @@ fun ActivityScreen(navController: NavController, currentProgress: Float) {
                             text = label,
                             fontSize = 13.sp,
                             fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal,
-                            color = if (selectedTab == index) Color(0xFF1CA6A6) else Color(
-                                0xFF475569
-                            )
+                            color = if (selectedTab == index) Color(0xFF1CA6A6) else Color(0xFF475569)
                         )
                     }
                 }
             }
         }
 
+        // --- KONTEN DINAMIS BERDASARKAN TAB ---
         if (selectedTab == 0) {
+            // Tab 0: Menampilkan pesanan yang sedang aktif
             SedangBerjalanContent(navController, currentProgress)
         } else {
+            // Tab 1: Menampilkan Riwayat (Memanggil fungsi dari file RiwayatContent.kt)
             RiwayatContent()
         }
     }
@@ -100,6 +110,7 @@ fun SedangBerjalanContent(navController: NavController, progress: Float) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Card Status Perjalanan
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,16 +119,13 @@ fun SedangBerjalanContent(navController: NavController, progress: Float) {
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
+            Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Badge Live Status
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(50.dp))
@@ -125,63 +133,31 @@ fun SedangBerjalanContent(navController: NavController, progress: Float) {
                             .padding(horizontal = 10.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(RoundedCornerShape(50.dp))
-                                .background(Color(0xFF4CAF50))
-                        )
+                        Box(modifier = Modifier.size(8.dp).clip(RoundedCornerShape(50.dp)).background(Color(0xFF4CAF50)))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            "Live Status",
-                            fontSize = 12.sp,
-                            color = Color(0xFF4CAF50),
-                            fontWeight = FontWeight.Medium
-                        )
+                        Text("Live Status", fontSize = 12.sp, color = Color(0xFF4CAF50), fontWeight = FontWeight.Medium)
                     }
+                    // ID Pesanan
                     Column(horizontalAlignment = Alignment.End) {
                         Text(text = "Id. Pesanan", fontSize = 10.sp, color = Color(0xFFBDBDBD))
-                        Text(
-                            text = "#ADL-001",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF29B6C5)
-                        )
+                        Text(text = "#ADL-001", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF29B6C5))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(15.dp))
-                Text(
-                    text = "Angkot ADL",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A2E)
-                )
-                Text(
-                    text = "Arjosari - Dinoyo - Landungsari",
-                    fontSize = 13.sp,
-                    color = Color(0xFF29B6C5)
-                )
+                Text(text = "Angkot ADL", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+                Text(text = "Arjosari - Dinoyo - Landungsari", fontSize = 13.sp, color = Color(0xFF29B6C5))
 
                 Spacer(modifier = Modifier.height(10.dp))
+                // Info Supir & Plat
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_supir),
-                            null,
-                            Modifier.size(16.dp),
-                            Color(0xFF888EA8)
-                        )
+                        Icon(painterResource(id = R.drawable.ic_supir), null, Modifier.size(16.dp), Color(0xFF888EA8))
                         Spacer(Modifier.width(4.dp))
                         Text("Mulyono", fontSize = 13.sp, color = Color(0xFF64748B))
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_plate),
-                            null,
-                            Modifier.size(16.dp),
-                            Color(0xFF888EA8)
-                        )
+                        Icon(painterResource(id = R.drawable.ic_plate), null, Modifier.size(16.dp), Color(0xFF888EA8))
                         Spacer(Modifier.width(4.dp))
                         Text("N 1234 AB", fontSize = 13.sp, color = Color(0xFF64748B))
                     }
@@ -189,60 +165,35 @@ fun SedangBerjalanContent(navController: NavController, progress: Float) {
 
                 Spacer(modifier = Modifier.height(34.dp))
 
+                // Progress Tracker
                 Box(modifier = Modifier.fillMaxWidth()) {
                     LinearProgressIndicator(
                         progress = progress,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(3.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .align(Alignment.Center),
+                        modifier = Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(50.dp)).align(Alignment.Center),
                         color = Color(0xFF29B6C5),
                         trackColor = Color(0xFFE0E0E0)
                     )
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(Color(0xFF29B6C5))
-                            .align(Alignment.CenterStart)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(if (progress >= 1f) Color(0xFF29B6C5) else Color(0xFFBDBDBD))
-                            .align(Alignment.CenterEnd)
-                    )
+                    Box(modifier = Modifier.size(12.dp).clip(RoundedCornerShape(50.dp)).background(Color(0xFF29B6C5)).align(Alignment.CenterStart))
+                    Box(modifier = Modifier.size(12.dp).clip(RoundedCornerShape(50.dp)).background(if (progress >= 1f) Color(0xFF29B6C5) else Color(0xFFBDBDBD)).align(Alignment.CenterEnd))
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Beli", fontSize = 11.sp, color = Color(0xFF2F9E9E))
                     Text(text = "Sampai", fontSize = 11.sp, color = Color(0xFFBDBDBD))
                 }
 
                 Spacer(modifier = Modifier.height(50.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Estimasi Sampai :", fontSize = 13.sp, color = Color(0xFFBDBDBD))
-                    Text(
-                        text = if (progress >= 1f) "Sampai" else "09:10 AM",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF29B6C5)
-                    )
+                    Text(text = if (progress >= 1f) "Sampai" else "09:10 AM", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF29B6C5))
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(38.dp))
+
+        // --- RINCIAN PERJALANAN (Bawah) ---
         Text(
             "Rincian Perjalanan",
             fontSize = 15.sp,
@@ -263,13 +214,7 @@ fun SedangBerjalanContent(navController: NavController, progress: Float) {
                 HorizontalDivider(color = Color(0xFFF2F4F7))
                 RincianItem(R.drawable.ic_penumpang, "Penumpang", "1 Orang")
                 HorizontalDivider(color = Color(0xFFF2F4F7))
-                RincianItem(
-                    R.drawable.ic_oksigen,
-                    "CO2 Terselamatkan",
-                    "0.8 kg",
-                    Color(0xFF4CAF50),
-                    backgroundColor = Color(0xFFf4fafa)
-                )
+                RincianItem(R.drawable.ic_oksigen, "CO2 Terselamatkan", "0.8 kg", Color(0xFF4CAF50), backgroundColor = Color(0xFFf4fafa))
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
