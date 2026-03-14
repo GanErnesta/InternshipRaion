@@ -38,11 +38,9 @@ fun ForgotPasswordScreen(
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    // State untuk AlertDialog
     var showDialog by remember { mutableStateOf(false) }
     var verificationInput by remember { mutableStateOf("") }
 
-    // --- LOGIKA DIALOG ---
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -108,7 +106,6 @@ fun ForgotPasswordScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF8F9FA))) {
-        // 1. Header Biru
         Surface(
             modifier = Modifier.fillMaxWidth().height(280.dp),
             color = Color(0xFF268696),
@@ -123,7 +120,6 @@ fun ForgotPasswordScreen(
             }
         }
 
-        // 2. Tombol Back
         IconButton(
             onClick = onBackClick,
             modifier = Modifier.padding(top = 40.dp, start = 16.dp)
@@ -133,7 +129,6 @@ fun ForgotPasswordScreen(
             }
         }
 
-        // 3. Card Putih
         Surface(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(top = 220.dp),
             shape = RoundedCornerShape(32.dp), color = Color.White, shadowElevation = 8.dp
@@ -178,7 +173,6 @@ fun ForgotPasswordScreen(
             }
         }
 
-        // 4. Floating Icon
         Surface(
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 180.dp).size(80.dp),
             shape = CircleShape, color = Color.White, shadowElevation = 4.dp, border = BorderStroke(4.dp, Color(0xFFE0F2F1))
@@ -188,20 +182,14 @@ fun ForgotPasswordScreen(
     }
 }
 
-/**
- * Fungsi ini menangani pembersihan link Firebase.
- * Mendukung input berupa link utuh maupun kode mentah.
- */
 fun getOobCodeFromUrl(input: String): String {
     return try {
         val trimmed = input.trim()
         if (trimmed.contains("oobCode=")) {
-            // Ambil bagian setelah oobCode= dan sebelum tanda & (jika ada)
             val codePart = trimmed.substringAfter("oobCode=").substringBefore("&")
-            // Decode karakter spesial seperti %3D menjadi =
             URLDecoder.decode(codePart, "UTF-8")
         } else {
-            trimmed // Jika user memasukkan kode mentah langsung
+            trimmed
         }
     } catch (e: Exception) {
         input.trim()

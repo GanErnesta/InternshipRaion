@@ -54,4 +54,26 @@ object RouteData {
 
         LatLng(-7.924980, 112.598046) // Terminal Landungsari
     )
+    val UB_TO_KOS_SUHAT = listOf(
+        LatLng(-7.953865, 112.614110), // Jl. UB
+        LatLng(-7.954141, 112.613961), // Jl. UB
+        LatLng(-7.954225, 112.613914), // Jl. UB
+        LatLng(-7.954534, 112.613719), // Jl. UB
+        LatLng(-7.954939, 112.613561), // Jl. UB
+        LatLng(-7.955367, 112.613463), // Jl. UB
+        LatLng(-7.956091, 112.613402), // Jl. UB
+
+        LatLng(-7.956202, 112.613399), // Jalan Veteran
+        LatLng(-7.955992, 112.614714), // Jalan Veteran
+        LatLng(-7.955862, 112.615385), // Jalan Veteran
+        LatLng(-7.955875, 112.615574), // Jalan Veteran
+        LatLng(-7.958096, 112.619455), // Jalan Veteran
+        LatLng(-7.959957, 112.621716), // Jalan Veteran
+
+        LatLng(-7.957892, 112.623446), // Jalan Mayjen Panjaitan
+        LatLng(-7.949827, 112.615377), // Jalan Mayjen Panjaitan
+
+        LatLng(-7.944511, 112.619398),  // Lokasi Kos kamu
+        LatLng(-7.944389, 112.619210)  // Lokasi Kos kamu
+    )
 }

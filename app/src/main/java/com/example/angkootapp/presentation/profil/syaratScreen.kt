@@ -28,7 +28,6 @@ fun SyaratScreen(
             .fillMaxSize()
             .background(Color(0xFFF2F4F7))
     ) {
-        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,7 +58,6 @@ fun SyaratScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Konten
         Column(
             modifier = Modifier
                 .fillMaxSize()

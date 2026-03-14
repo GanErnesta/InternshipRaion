@@ -54,7 +54,8 @@ fun MainScreen() {
                 Screen.YourSaldo.route,
                 Screen.TopUpSaldo.route,
                 Screen.SaldoSuccess.route,
-                Screen.PaymentSaldo.route
+                Screen.PaymentSaldo.route,
+                Screen.OrderSuccess.route
             )
 
             if (currentRoute !in noBottomNavRoutes) {

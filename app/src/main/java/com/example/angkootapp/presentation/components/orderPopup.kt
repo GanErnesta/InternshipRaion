@@ -1,6 +1,7 @@
 package com.example.angkootapp.presentation.components
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,7 +71,6 @@ fun OrderConfirmationDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Tombol Batal
                     Button(
                         onClick = onDismissRequest,
                         modifier = Modifier
@@ -85,9 +85,14 @@ fun OrderConfirmationDialog(
                         Text("Batal", fontWeight = FontWeight.Bold)
                     }
 
-                    // Tombol Pesan
                     Button(
-                        onClick = { onConfirm(context) },
+                        onClick = {
+                            try {
+                                onConfirm(context)
+                            } catch (e: Exception) {
+                                Log.e("OrderDialog", "Error saat klik pesan: ${e.message}")
+                            }
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),

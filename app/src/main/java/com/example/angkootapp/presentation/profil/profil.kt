@@ -179,14 +179,12 @@ private fun ProfilStatsCard(uiState: ProfileUiState, navController: NavControlle
                 .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // SALDO SINKRON
             StatItem(
                 iconResId = R.drawable.ic_tambah,
                 label = "Top Up Saldo",
                 value = uiState.walletBalance,
                 modifier = Modifier.clickable { navController.navigate(ProfileRoutes.TOP_UP) }
             )
-            // JUMLAH PERJALANAN/DOMPET SINKRON
             StatItem(
                 iconResId = R.drawable.dompet,
                 label = "Dompet",

@@ -69,7 +69,6 @@ fun TopUpSaldoScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 1. Header: Angkoot Wallet Section
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -104,7 +103,6 @@ fun TopUpSaldoScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 2. Input Nominal Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
@@ -135,7 +133,6 @@ fun TopUpSaldoScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    // Underline effect
                     Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFFE0E0E0)))
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -145,7 +142,6 @@ fun TopUpSaldoScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 3. Quick Selection Section
             Text(
                 "Pilih Nominal Cepat",
                 fontSize = 15.sp,
@@ -180,7 +176,6 @@ fun TopUpSaldoScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 4. Info Box
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = Color(0xFFE0F2F1).copy(alpha = 0.5f),
@@ -205,7 +200,6 @@ fun TopUpSaldoScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 5. Confirmation Button
             Button(
                 onClick = { onConfirmClick(nominalInput) },
                 modifier = Modifier

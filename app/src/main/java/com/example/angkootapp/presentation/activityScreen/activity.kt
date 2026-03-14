@@ -19,10 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.angkootapp.R
+import com.example.angkootapp.presentation.navigation.Screen
+import com.example.angkootapp.ui.theme.primaryColor
 
 @Composable
-fun ActivityScreen(navController: NavController) {
-    var selectedTab by remember { mutableStateOf(0) }
+fun ActivityScreen(navController: NavController, currentProgress: Float) {
+    var selectedTab by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -71,7 +73,9 @@ fun ActivityScreen(navController: NavController) {
                             text = label,
                             fontSize = 13.sp,
                             fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal,
-                            color = if (selectedTab == index) Color(0xFF1CA6A6) else Color(0xFF475569)
+                            color = if (selectedTab == index) Color(0xFF1CA6A6) else Color(
+                                0xFF475569
+                            )
                         )
                     }
                 }
@@ -79,221 +83,198 @@ fun ActivityScreen(navController: NavController) {
         }
 
         if (selectedTab == 0) {
-            sedangBerjalanContent()
+            SedangBerjalanContent(navController, currentProgress)
         } else {
             RiwayatContent()
         }
-        }
+    }
 }
 
 @Composable
-fun sedangBerjalanContent() {
-        Column(
+fun SedangBerjalanContent(navController: NavController, progress: Float) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .clickable { navController.navigate(Screen.Tracking.route) },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(2.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(2.dp)
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
             ) {
-                Column(modifier = Modifier.padding(16.dp).fillMaxWidth()
-                    .heightIn(min = 220.dp)) {
-
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(Color(0xFFF0FDF4))
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(50.dp))
-                                .background(Color(0xFFF0FDF4))
-                                .padding(horizontal = 10.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(RoundedCornerShape(50.dp))
-                                    .background(Color(0xFF4CAF50))
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Live Status",
-                                fontSize = 12.sp,
-                                color = Color(0xFF4CAF50),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(text = "Id. Pesanan", fontSize = 10.sp, color = Color(0xFFBDBDBD))
-                            Text(
-                                text = "#ADL-001",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF29B6C5)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    Text(
-                        text = "Angkot ADL",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1A1A2E)
-                    )
-                    Text(
-                        text = "Arjosari - Dinoyo - Landungsari",
-                        fontSize = 13.sp,
-                        color = Color(0xFF29B6C5)
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_supir),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = Color(0xFF888EA8)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Mulyono", fontSize = 13.sp, color = Color(0xFF64748B))
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_plate),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = Color(0xFF888EA8)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "N 1234 AB", fontSize = 13.sp, color = Color(0xFF64748B))
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(34.dp))
-
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        LinearProgressIndicator(
-                            progress = { 0.5f },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(3.dp)
-                                .clip(RoundedCornerShape(50.dp))
-                                .align(Alignment.Center),
-                            color = Color(0xFF29B6C5),
-                            trackColor = Color(0xFFE0E0E0)
-                        )
-                        // Dot kiri
                         Box(
                             modifier = Modifier
-                                .size(12.dp)
+                                .size(8.dp)
                                 .clip(RoundedCornerShape(50.dp))
-                                .background(Color(0xFF29B6C5))
-                                .align(Alignment.CenterStart)
+                                .background(Color(0xFF4CAF50))
                         )
-                        // Dot kanan
-                        Box(
-                            modifier = Modifier
-                                .size(12.dp)
-                                .clip(RoundedCornerShape(50.dp))
-                                .background(Color(0xFFBDBDBD))
-                                .align(Alignment.CenterEnd)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = "Beli", fontSize = 11.sp, color = Color(0xFF2F9E9E))
-                        Text(text = "Sampai", fontSize = 11.sp, color = Color(0xFFBDBDBD))
-                    }
-
-                    Spacer(modifier = Modifier.height(50.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Estimasi Sampai :",
+                            "Live Status",
+                            fontSize = 12.sp,
+                            color = Color(0xFF4CAF50),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(text = "Id. Pesanan", fontSize = 10.sp, color = Color(0xFFBDBDBD))
+                        Text(
+                            text = "#ADL-001",
                             fontSize = 13.sp,
-                            color = Color(0xFFBDBDBD)
-                        )
-                        Text(
-                            text = "09:10 AM",
-                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF29B6C5)
                         )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(38.dp))
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Angkot ADL",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A1A2E)
+                )
+                Text(
+                    text = "Arjosari - Dinoyo - Landungsari",
+                    fontSize = 13.sp,
+                    color = Color(0xFF29B6C5)
+                )
 
-            Text(
-                text = "Rincian Perjalanan",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF1A1A2E),
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painterResource(id = R.drawable.ic_supir),
+                            null,
+                            Modifier.size(16.dp),
+                            Color(0xFF888EA8)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("Mulyono", fontSize = 13.sp, color = Color(0xFF64748B))
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painterResource(id = R.drawable.ic_plate),
+                            null,
+                            Modifier.size(16.dp),
+                            Color(0xFF888EA8)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("N 1234 AB", fontSize = 13.sp, color = Color(0xFF64748B))
+                    }
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(34.dp))
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(2.dp)
-            ) {
-                Column(modifier = Modifier.padding(vertical = 2.dp)) {
-                    RincianItem(
-                        iconRes = R.drawable.ic_payment,
-                        label = "Metode Pembayaran",
-                        value = "QRIS"
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    LinearProgressIndicator(
+                        progress = progress,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(3.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .align(Alignment.Center),
+                        color = Color(0xFF29B6C5),
+                        trackColor = Color(0xFFE0E0E0)
                     )
-                    HorizontalDivider(color = Color(0xFFF2F4F7), thickness = 1.dp)
-                    RincianItem(
-                        iconRes = R.drawable.ic_tarif,
-                        label = "Total Tarif",
-                        value = "Rp 5.000"
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(Color(0xFF29B6C5))
+                            .align(Alignment.CenterStart)
                     )
-                    HorizontalDivider(color = Color(0xFFF2F4F7), thickness = 1.dp)
-                    RincianItem(
-                        iconRes = R.drawable.ic_penumpang,
-                        label = "Penumpang",
-                        value = "1 Orang"
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(if (progress >= 1f) Color(0xFF29B6C5) else Color(0xFFBDBDBD))
+                            .align(Alignment.CenterEnd)
                     )
-                    HorizontalDivider(color = Color(0xFFF2F4F7), thickness = 1.dp)
-                    RincianItem(
-                        iconRes = R.drawable.ic_oksigen,
-                        label = "CO2 Terselamatkan",
-                        value = "0.8 kg",
-                        valueColor = Color(0xFF4CAF50),
-                        labelColor = Color(0xFF4CAF50),
-                        backgroundColor = Color(0xFFf4fafa)
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Beli", fontSize = 11.sp, color = Color(0xFF2F9E9E))
+                    Text(text = "Sampai", fontSize = 11.sp, color = Color(0xFFBDBDBD))
+                }
+
+                Spacer(modifier = Modifier.height(50.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Estimasi Sampai :", fontSize = 13.sp, color = Color(0xFFBDBDBD))
+                    Text(
+                        text = if (progress >= 1f) "Sampai" else "09:10 AM",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF29B6C5)
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
-    }
 
+        Spacer(modifier = Modifier.height(38.dp))
+        Text(
+            "Rincian Perjalanan",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = primaryColor,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(2.dp)
+        ) {
+            Column {
+                RincianItem(R.drawable.ic_payment, "Metode Pembayaran", "QRIS")
+                HorizontalDivider(color = Color(0xFFF2F4F7))
+                RincianItem(R.drawable.ic_tarif, "Total Tarif", "Rp 5.000")
+                HorizontalDivider(color = Color(0xFFF2F4F7))
+                RincianItem(R.drawable.ic_penumpang, "Penumpang", "1 Orang")
+                HorizontalDivider(color = Color(0xFFF2F4F7))
+                RincianItem(
+                    R.drawable.ic_oksigen,
+                    "CO2 Terselamatkan",
+                    "0.8 kg",
+                    Color(0xFF4CAF50),
+                    backgroundColor = Color(0xFFf4fafa)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
 
 @Composable
 fun RincianItem(
@@ -301,7 +282,6 @@ fun RincianItem(
     label: String,
     value: String,
     valueColor: Color = Color(0xFF1A1A2E),
-    labelColor: Color = Color(0xFF64748B),
     backgroundColor: Color = Color.Transparent
 ) {
     Row(
@@ -313,20 +293,10 @@ fun RincianItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(id = iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(28.dp),
-                tint = Color.Unspecified
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(text = label, fontSize = 13.sp, color = labelColor)
+            Icon(painterResource(id = iconRes), null, Modifier.size(28.dp), Color.Unspecified)
+            Spacer(Modifier.width(12.dp))
+            Text(text = label, fontSize = 13.sp, color = Color(0xFF64748B))
         }
-        Text(
-            text = value,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = valueColor
-        )
+        Text(text = value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = valueColor)
     }
 }

@@ -41,7 +41,6 @@ fun ResetPasswordScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF8F9FA))) {
-        // 1. Header Biru
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -67,7 +66,6 @@ fun ResetPasswordScreen(
             }
         }
 
-        // 2. Tombol Back
         IconButton(
             onClick = onBackClick,
             modifier = Modifier.padding(top = 40.dp, start = 16.dp)
@@ -86,7 +84,6 @@ fun ResetPasswordScreen(
             }
         }
 
-        // 3. Card Putih
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -160,7 +157,6 @@ fun ResetPasswordScreen(
             }
         }
 
-        // 4. Floating Icon
         Surface(
             modifier = Modifier
                 .align(Alignment.TopCenter)

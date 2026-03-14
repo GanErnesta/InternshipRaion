@@ -69,14 +69,12 @@ fun YourSaldoScreen(
                 .padding(padding)
                 .padding(horizontal = 20.dp)
         ) {
-            // 1. Saldo Card
             SaldoCard(saldo = uiState.saldo, onTopUpClick = onTopUpClick)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 2. Riwayat Button
             OutlinedButton(
-                onClick = { /* Navigate to History */ },
+                onClick = { },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
@@ -91,7 +89,6 @@ fun YourSaldoScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 3. Aktivitas Terakhir Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -112,7 +109,6 @@ fun YourSaldoScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 4. List Transaksi
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(bottom = 20.dp)

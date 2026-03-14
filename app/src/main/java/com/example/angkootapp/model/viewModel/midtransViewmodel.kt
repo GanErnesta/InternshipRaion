@@ -16,7 +16,6 @@ class midtransViewModel : ViewModel() {
         val serverKey = "SB-Mid-server-JoMSYL5Ia0BlZBasE4dIjth4"
         val auth = "Basic " + Base64.encodeToString("$serverKey:".toByteArray(), Base64.NO_WRAP).trim()
 
-        // 2. Siapkan Data Transaksi
         val requestBody: Map<String, @JvmSuppressWildcards Any> = mapOf(
             "transaction_details" to mapOf(
                 "order_id" to "TRX-ANGKOOT-${System.currentTimeMillis()}",
@@ -33,7 +32,6 @@ class midtransViewModel : ViewModel() {
             "payment_type" to "qris"
         )
 
-        // 3. Setup Retrofit
         val retrofit = Retrofit.Builder()
             .baseUrl("https://app.sandbox.midtrans.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -41,14 +39,12 @@ class midtransViewModel : ViewModel() {
 
         val service = retrofit.create(MidtransService::class.java)
 
-        // 4. Jalankan Request
         service.createTransaction(auth, requestBody).enqueue(object : retrofit2.Callback<Map<String, Any>> {
             override fun onResponse(call: retrofit2.Call<Map<String, Any>>, response: retrofit2.Response<Map<String, Any>>) {
                 if (response.isSuccessful && response.body() != null) {
                     val redirectUrl = response.body()?.get("redirect_url") as? String
                     if (!redirectUrl.isNullOrEmpty()) {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(redirectUrl)).apply {
-                            // Tambahkan FLAG_ACTIVITY_NEW_TASK untuk keamanan context
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                         try {
@@ -58,7 +54,6 @@ class midtransViewModel : ViewModel() {
                         }
                     }
                 } else {
-                    // Baca error dari server biar kita tau kenapa ditolak
                     val errorBody = response.errorBody()?.string()
                     Log.e("Midtrans", "Ditolak Server: $errorBody")
                 }
